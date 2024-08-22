@@ -63,7 +63,7 @@ columns_to_shift = ['Close', 'MA_5', 'MA_10', 'MA_20', 'RSI_14', 'MACD',
 
 
 # 因資料特定欄位計算有回朔需求而向前推進抓取時間，設定要排除的期間
-end_date   = '2019-12-31'
+end_date = '2019-12-31'
 
 # 排除特定期間內的數據
 Currency_data.drop(Currency_data.
