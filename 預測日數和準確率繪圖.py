@@ -50,8 +50,8 @@ Currency_data['CDL3BLACKCROWS'] = talib.CDL3BLACKCROWS (df_open, df_high,
 columns_to_shift = ['Close', 'MA_5', 'MA_10', 'MA_20', 'RSI_14', 'MACD', 
                     'K', 'D','Bollinger Bands Upper', 
                     'Bollinger Bands Middle', 'Bollinger Bands lower',
-                    'CCI', 'MOM', 'BOP','WILLR','SAR','AVGPRICE','LINEARREG_ANGLE',
-                    'WMA','STDDEV','CDL3BLACKCROWS'] # 選取需要進行處理的欄位名稱
+                    'CCI', 'MOM', 'BOP', 'WILLR', 'SAR', 'AVGPRICE', 
+                    'LINEARREG_ANGLE', 'WMA','STDDEV', 'CDL3BLACKCROWS'] # 選取需要進行處理的欄位名稱
 
 
 # =============================================================================
