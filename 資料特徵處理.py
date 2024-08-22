@@ -2,13 +2,9 @@ import pandas as pd
 import talib
 
 
-Currency_data = pd.read_excel('TWD%3DX_Currency_data.xlsx', 
+DataFolder = 'Ori_Data/'
+Currency_data = pd.read_excel(DataFolder + 'USDtoTWD_Currency_data.xlsx', 
                               index_col = 'Date')  # 讀取匯率資料
-
-missing_values = Currency_data.isnull().sum() # 檢查每一列是否有空值
-
-#print(missing_values)
-
 Currency_data.drop(columns = ['Adj Close'], inplace = True)
 df_open = Currency_data['Open']
 df_close = Currency_data['Close']
@@ -30,9 +26,9 @@ Currency_data['K'],  Currency_data['D'] = \
                 slowk_period = 14, slowd_period = 3) # 計算 KD
 
 upperband, middleband, lowerband = talib.BBANDS(df_close, 
-                                          timeperiod=5, 
-                                          nbdevup=2, nbdevdn=2, 
-                                          matype=0)
+                                          timeperiod = 5, 
+                                          nbdevup = 2, nbdevdn = 2, 
+                                          matype = 0)
 Currency_data['Bollinger Bands Upper'] = upperband
 Currency_data['Bollinger Bands Middle'] = middleband
 Currency_data['Bollinger Bands lower'] = lowerband
@@ -44,18 +40,18 @@ Currency_data['WILLR'] = talib.WILLR(df_high, df_low, df_close,
 Currency_data['SAR'] = talib.SAR(df_high, df_low)
 Currency_data['AVGPRICE'] = talib.AVGPRICE(df_open, df_high, df_low, df_close)
 Currency_data['WCLPRICE'] = talib.WCLPRICE(df_high, df_low, df_close)
-Currency_data['LINEARREG_ANGLE'] = talib.LINEARREG_ANGLE(df_close,14)
+Currency_data['LINEARREG_ANGLE'] = talib.LINEARREG_ANGLE(df_close, 14)
 Currency_data['WMA'] = talib.WMA(df_close,30) # 計算 MA5
 Currency_data['STDDEV'] = talib.STDDEV (df_close, timeperiod=5, nbdev=1)
-Currency_data['CDL3BLACKCROWS'] = talib.CDL3BLACKCROWS (df_open, df_high, df_low, df_close)
+Currency_data['CDL3BLACKCROWS'] = talib.CDL3BLACKCROWS (df_open, df_high, 
+                                                        df_low, df_close)
 
 
 columns_to_shift = ['Close', 'MA_5', 'MA_10', 'MA_20', 'RSI_14', 'MACD', 
-                    'K', 'D','Bollinger Bands Upper', 
+                    'K', 'D', 'Bollinger Bands Upper', 
                     'Bollinger Bands Middle', 'Bollinger Bands lower',
-                    'CCI', 'MOM', 'BOP','WILLR','SAR','AVGPRICE','LINEARREG_ANGLE',
-                    'WMA','STDDEV','CDL3BLACKCROWS'] # 選取需要進行處理的欄位名稱
-
+                    'CCI', 'MOM', 'BOP', 'WILLR', 'SAR', 'AVGPRICE',
+                    'LINEARREG_ANGLE', 'WMA', 'STDDEV', 'CDL3BLACKCROWS'] # 選取需要進行處理的欄位名稱
 
 # =============================================================================
 # # 參考前 5(週), 10(雙週), 15(三週), 20(月) 個交易日作為特徵相關參考
@@ -67,26 +63,27 @@ columns_to_shift = ['Close', 'MA_5', 'MA_10', 'MA_20', 'RSI_14', 'MACD',
 
 
 # 因資料特定欄位計算有回朔需求而向前推進抓取時間，設定要排除的期間
-start_date = '2019-01-01'
 end_date   = '2019-12-31'
 
 # 排除特定期間內的數據
 Currency_data.drop(Currency_data.
-                   loc[start_date : end_date].index, inplace = True)
+                   loc[:end_date].index, inplace = True)
 print(Currency_data.head())
 
 # 讀入其他資料進行合併
-Fed_Funds_Rate = pd.read_excel('Fed_Funds_Rate.xlsx')  
-USA_CPI = pd.read_excel('USA_CPI_Data.xlsx')  
-USA_Unemployment_Rate = pd.read_excel('USA_Unemployment_Rate.xlsx')  
-TW_CPI = pd.read_excel('TW_CPI.xlsx')
-USA_GDP = pd.read_excel('USA_GDP.xlsx')
-TW_Rate = pd.read_excel('TW_Rate.xlsx')
-DXY_NYB = pd.read_excel('dxy_data.xlsx')
-GOLD_data = pd.read_excel('gold_data.xlsx')
+Fed_Funds_Rate = pd.read_excel(DataFolder + 'Fed_Funds_Rate.xlsx')  
+USA_CPI = pd.read_excel(DataFolder + 'USA_CPI_Data.xlsx')  
+USA_Unemployment_Rate = pd.read_excel(DataFolder + 'USA_Unemployment_Rate.xlsx')  
+TW_CPI = pd.read_excel(DataFolder + 'TW_CPI.xlsx')
+USA_GDP = pd.read_excel(DataFolder + 'USA_GDP.xlsx')
+TW_Rate = pd.read_excel(DataFolder + 'TW_Rate.xlsx')
+DXY_NYB = pd.read_excel(DataFolder + 'Dx-y_data.xlsx')
+GOLD_data = pd.read_excel(DataFolder + 'Gold_data.xlsx')
 
 # =============================================================================
-# merge_asof，用於合併兩個數據框，其中一個數據框的時間戳（或排序列）可能在另一個數據框中找不到完全對應的記錄。這時，可以根據時間戳的前向或後向對齊進行合併。
+# merge_asof，用於合併兩個數據框，其中一個數據框的時間戳（或排序列）可能在另一個
+# 數據框中找不到完全對應的記錄。這時，可以根據時間戳的前向或後向對齊進行合併。
+#
 # 參數說明
 # left: 左側數據欄。
 # 
