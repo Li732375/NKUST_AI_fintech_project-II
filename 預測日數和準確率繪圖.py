@@ -216,6 +216,12 @@ plt.rcParams['font.family'] = 'Microsoft JhengHei' # 設置中文字體
 plt.figure(figsize = (12, 6))
 all_acc = pd.Series(test_list)
 a = all_acc.iloc[1:].plot(kind = 'line', color = 'green')
+
+# 設置刻度字型大小
+# 'axis' 設置影響 x 軸和 y 軸；'which' 設置影響主要刻度；'labelsize' 設置刻度字型大小
+plt.tick_params(axis = 'both', which = 'major', labelsize = 14)
+
+# 或者直接在 plt.yticks 設定參數 fontsize。
 ytick = [i / 20 for i in range(10, 20)] # 注意到 range 的全部參數僅能輸入整數，因此要輸出小數數列需換個形式
 plt.yticks(ytick, [str(int(i * 100)) + ' %' for i in ytick])
 plt.ylim(0.55, 1.0)
