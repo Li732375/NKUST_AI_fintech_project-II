@@ -47,29 +47,6 @@ Currency_data['CDL3BLACKCROWS'] = talib.CDL3BLACKCROWS (df_open, df_high,
                                                         df_low, df_close)
 
 
-columns_to_shift = ['Close', 'MA_5', 'MA_10', 'MA_20', 'RSI_14', 'MACD', 
-                    'K', 'D', 'Bollinger Bands Upper', 
-                    'Bollinger Bands Middle', 'Bollinger Bands lower',
-                    'CCI', 'MOM', 'BOP', 'WILLR', 'SAR', 'AVGPRICE',
-                    'LINEARREG_ANGLE', 'WMA', 'STDDEV', 'CDL3BLACKCROWS'] # 選取需要進行處理的欄位名稱
-
-# =============================================================================
-# # 參考前 5(週), 10(雙週), 15(三週), 20(月) 個交易日作為特徵相關參考
-# for period in range(5, 21,5): # 運用迴圈帶入前 N 期收盤價
-#         for column in columns_to_shift: # 運用迴圈走訪所選的欄位名稱
-#             Currency_data[f'{column}_{period}'] = \
-#                 Currency_data[column].shift(period) # 運用.shift()方法取得收盤價
-# =============================================================================
-
-
-# 因資料特定欄位計算有回朔需求而向前推進抓取時間，設定要排除的期間
-end_date = '2019-12-31'
-
-# 排除特定期間內的數據
-Currency_data.drop(Currency_data.
-                   loc[:end_date].index, inplace = True)
-print(Currency_data.head())
-
 # 讀入其他資料進行合併
 Fed_Funds_Rate = pd.read_excel(DataFolder + 'Fed_Funds_Rate.xlsx')  
 USA_CPI = pd.read_excel(DataFolder + 'USA_CPI_Data.xlsx')  
@@ -107,18 +84,31 @@ df_merge = pd.merge_asof(Fed_Funds_Rate.sort_values('DATE'),
 df_merge = pd.merge_asof(df_merge.sort_values('DATE'), 
                          USA_Unemployment_Rate.sort_values('DATE'), 
                          on = 'DATE') # 合併資料
+
+TW_CPI = TW_CPI.rename(columns = {'CPI': 'TW_CPI'}) # 欄位名稱調整
 df_merge = pd.merge_asof(df_merge.sort_values('DATE'), 
                          TW_CPI.sort_values('DATE'), on = 'DATE') # 合併資料
+
+USA_GDP = USA_GDP.rename(columns = {'GDP': 'US_GDP'}) # 欄位名稱調整
 df_merge = pd.merge_asof(df_merge.sort_values('DATE'), 
                          USA_GDP.sort_values('DATE'), on = 'DATE') # 合併資料
+
 df_merge = pd.merge_asof(df_merge.sort_values('DATE'), 
                          TW_Rate.sort_values('DATE'), on = 'DATE') # 合併資料
 
-DXY_NYB = DXY_NYB.rename(columns = {'Date': 'DATE'}) # 美元指數小寫改大寫
+
+DXY_NYB = DXY_NYB.rename(columns = {'Date': 'DATE', 'Close': 'USD_Index', 
+                                    'Growth Rate': 'USD_Index_Growth_Rate'}) # 美元指數小寫改大寫
 df_merge = pd.merge_asof(df_merge.sort_values('DATE'), 
                          DXY_NYB.sort_values('DATE'), on = 'DATE') # 合併資料
 
-GOLD_data = GOLD_data.rename(columns = {'Date': 'DATE'}) # 黃金改大寫
+GOLD_data = GOLD_data.rename(columns = {'Date': 'DATE', 'Open': 'Gold_Open', 
+                                        'High': 'Gold_High', 
+                                        'Low': 'Gold_Low', 
+                                        'Close': 'Gold_Close',
+                                        'Adj Close': 'Gold_Adj_Close',
+                                        'Volume': 'Gold_Volume',
+                                        'Growth Rate': 'Gold_Growth_Rate'}) # 黃金改大寫
 df_merge = pd.merge_asof(df_merge.sort_values('DATE'), 
                          GOLD_data.sort_values('DATE'), on = 'DATE') # 合併資料
 
@@ -127,8 +117,24 @@ Currency_data = Currency_data.rename(columns = {'Date': 'DATE'})
 df_merge = pd.merge_asof(Currency_data.sort_values('DATE'), 
                          df_merge.sort_values('DATE'), on = 'DATE') # 合併資料
 
-# 計算差距欄位
-df_merge['CPI Delta'] = df_merge['CPIAUCNS'] - df_merge['CPI']
+# 計算兩筆資料間差距 (前後或者上下之間)
+df_merge['FEDFUNDS_Delta'] = df_merge['FEDFUNDS'].pct_change(periods = 21)
+
+
+# 因資料特定欄位計算有回朔需求而向前推進抓取時間，設定要排除的期間
+end_date = '2019-12-31'
+
+# 排除特定期間內的數據
+df_merge.set_index('DATE', inplace = True)
+df_merge.drop(df_merge.loc[:end_date].index, inplace = True)
+print(df_merge.head())
+
+# 計算差距欄位 (欄位之間)
+df_merge['CPI_Delta'] = df_merge['CPIAUCNS'] - df_merge['TW_CPI'] # 兩國 CPI 差距
+
+# 移除無用欄位
+df_merge = df_merge.drop(columns = ['Volume', 'BOP', 'CDL3BLACKCROWS', 
+                                    'Gold_Adj_Close'])
 
 
 # 處理 y 資料
@@ -148,12 +154,13 @@ df_merge['LABEL'] = \
         classify_return) # 創造新的一列 LABEL 來記錄漲跌
 
 print(df_merge.head())
-df_merge.to_excel("data.xlsx", index = False) # 將整理好的資料存成 excel
+print(df_merge.tail())
+df_merge.to_excel("data.xlsx") # 將整理好的資料存成 excel
 print("已將結果寫入檔案 data.xlsx")
 
 ones_count = (df_merge['LABEL'] == 1).sum()
 zero_count = (df_merge['LABEL'] == 0).sum()
-print(f"上漲數為 {ones_count}")
-print(f"下跌數為 {zero_count}")
+print(f"上漲數為 {ones_count} ({ones_count / df_merge['LABEL'].count() * 100:.1f} %)")
+print(f"下跌數為 {zero_count} ({zero_count / df_merge['LABEL'].count() * 100:.1f} %)")
 print(f"總特徵數為 {len(df_merge.columns)}")
 
