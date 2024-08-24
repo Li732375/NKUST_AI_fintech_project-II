@@ -64,7 +64,7 @@ columns_to_shift = ['Close', 'MA_5', 'MA_10', 'MA_20', 'RSI_14', 'MACD',
 
 
 # 因資料特定欄位計算有回朔需求而向前推進抓取時間，設定要排除的期間
-end_date = '2018-12-31'
+end_date = '2022-12-31'
 
 # 排除特定期間內的數據
 Currency_data.drop(Currency_data.
@@ -147,10 +147,15 @@ def function(num): # 預測日數
         df_merge[f'Next_{pre_day}Day_Return'].apply(
             classify_return) # 創造新的一列 LABEL 來記錄漲跌
     
+    
 test_list = [0]
     
 for i in range(60):
     function(i + 1)
+    
+    # 移除過去新增的欄位
+    if (i + 1) > 1:
+        df_merge = df_merge.drop(columns = [f'Next_{i}Day_Return'])
     
     #print(df_merge.head())
     df_merge.to_excel("data.xlsx", index = False) # 將整理好的資料存成 excel
@@ -158,8 +163,8 @@ for i in range(60):
     
     ones_count = (df_merge['LABEL'] == 1).sum()
     zero_count = (df_merge['LABEL'] == 0).sum()
-    print(f"上漲數為 {ones_count}")
-    print(f"下跌數為 {zero_count}")
+    print(f"上漲數為 {ones_count} ({ones_count / df_merge['LABEL'].count() * 100:.1f} %)")
+    print(f"下跌數為 {zero_count} ({zero_count / df_merge['LABEL'].count() * 100:.1f} %)")
     print(f"總特徵數為 {len(df_merge.columns)}")
     
     from sklearn.model_selection import train_test_split
@@ -178,7 +183,7 @@ for i in range(60):
                      'Bollinger Bands Upper', 'USA_GDP_Rate']
     # 0.821
         
-    def split_stock_data(stock_data, label_column, delete_column, 
+    def split_stock_data(stock_data, label_column, 
                          test_size = 0.3, random_state = 42):
         X = stock_data[feature_names].values
         y = stock_data[label_column].values
@@ -190,12 +195,11 @@ for i in range(60):
         return X_train, X_test, y_train, y_test, feature_names
 
     label_column = 'LABEL'
-    delete_column = ['LABEL', 'Volume_x', 'Next_5Day_Return']
     accuracies = []
 
     # 分割資料
     trainX, testX, trainY, testY, feature_names = \
-        split_stock_data(df, label_column, delete_column)
+        split_stock_data(df, label_column)
     Xgboost = XGBClassifier()
     start_time = time.time()
     Xgboost.fit(trainX, trainY)
@@ -222,19 +226,19 @@ a = all_acc.iloc[1:].plot(kind = 'line', color = 'green')
 plt.tick_params(axis = 'both', which = 'major', labelsize = 14)
 
 # 或者直接在 plt.yticks 設定參數 fontsize。
-ytick = [i / 20 for i in range(10, 20)] # 注意到 range 的全部參數僅能輸入整數，因此要輸出小數數列需換個形式
+ytick = [i / 20 for i in range(10, 21)] # 注意到 range 的全部參數僅能輸入整數，因此要輸出小數數列需換個形式
 plt.yticks(ytick, [str(int(i * 100)) + ' %' for i in ytick])
-plt.ylim(0.55, 1.0)
+plt.ylim(0.5, 1.05)
 
 # 在圖上標註最大值
 plt.annotate(f'{all_acc.idxmax()}日 ({all_acc.max() * 100:.1f} %)',
              xy = (all_acc.idxmax(), all_acc.max()),  # 註釋點的位置
              xytext = (all_acc.idxmax(), all_acc.max() - 0.1),  # 註釋文字的位置
              arrowprops = dict(facecolor = 'red', shrink = 0.2, 
-                               headlength = 16),  # 設置箭頭的屬性
+                               headlength = 14),  # 設置箭頭的屬性
              fontsize = 16,
              color = 'red',
-             ha ='center')
+             ha = 'center')
 # =============================================================================
 # arrowprops 參數
 # facecolor：箭頭的填充顏色。這裡設為 'red'。
@@ -249,9 +253,10 @@ plt.annotate(f'{all_acc.idxmax()}日 ({all_acc.max() * 100:.1f} %)',
 # 在圖上標註最小值
 plt.annotate(f'{all_acc.iloc[1:].idxmin()}日 ({all_acc.iloc[1:].min() * 100:.1f} %)',
              xy = (all_acc.iloc[1:].idxmin(), all_acc.iloc[1:].min()),  # 註釋點的位置
-             xytext = (all_acc.iloc[1:].idxmin() + 5, all_acc.iloc[1:].min()),  # 註釋文字的位置
-             arrowprops = dict(facecolor = 'blue', shrink = 0.2, 
-                               headlength = 16),  # 設置箭頭的屬性
+             xytext = (all_acc.iloc[1:].idxmin() + 2, 
+                       all_acc.iloc[1:].min() - 0.05),  # 註釋文字的位置
+             arrowprops = dict(facecolor = 'blue', shrink = 0.1, 
+                               shrinkA = 5, headlength = 14),  # 設置箭頭的屬性
              fontsize = 16,
              color = 'blue',
              va = 'center')
@@ -261,7 +266,7 @@ plt.title(f'預測日數準確度折線圖 【訓練資料期間 {str(df_merge['
 plt.xlabel('日數', fontsize = 15)
 plt.ylabel('準確率', fontsize = 15)
 plt.grid(axis = 'y')
-plt.legend(['準確率'], fontsize = 15)
+plt.legend(['準確率'], loc = 'upper left', fontsize = 15)
     
 
 
