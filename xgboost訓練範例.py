@@ -2,7 +2,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
 
-df = pd.read_excel('data.xlsx', index_col = 'Date')
+df = pd.read_excel('data.xlsx', index_col = 'DATE')
 #print(df.columns)
 
 def split_stock_data(stock_data, label_column, delete_column, test_size = 0.3, 
@@ -21,7 +21,7 @@ def split_stock_data(stock_data, label_column, delete_column, test_size = 0.3,
 
 label_column = 'LABEL' # 標籤欄位
 # 刪除的欄位，欄位 'Next_?Day_Return' 中，? 應視特徵處理檔案參數 pre_day 調整
-delete_column = ['LABEL', 'Volume_x', 'Next_5Day_Return']
+delete_column = ['LABEL', 'Next_5Day_Return']
 
 # 切分資料為訓練與測試集
 trainX, testX, trainY, testY, feature_names = split_stock_data(df, label_column, 
