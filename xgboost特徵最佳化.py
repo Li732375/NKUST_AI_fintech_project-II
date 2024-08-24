@@ -10,10 +10,10 @@ import time
 df = pd.read_excel('data.xlsx')
 
 #print(df.columns)
-feature_names = ['Close_y', 'High_y', 'CPIAUCNS', 'Open_y', 'UNRATE', 'MA_20', 
-                 'MA_10', 'Growth Rate_x', 'TW_CPI_Rate', 
-                 'WILLR', 'Open_x', 'K', 'RSI_14', 'Volume_y', 
-                 'Growth Rate_y', 'FEDFUNDS', 'Bollinger Bands lower', 
+feature_names = ['Gold_Close', 'Gold_High', 'CPIAUCNS', 'Gold_Open', 'UNRATE', 'MA_20', 
+                 'MA_10', 'USD_Index_Growth_Rate', 'TW_CPI_Rate', 
+                 'WILLR', 'Open', 'K', 'RSI_14', 'Gold_Volume', 
+                 'Gold_Growth_Rate', 'FEDFUNDS', 'Bollinger Bands lower', 
                  'Bollinger Bands Upper', 'USA_GDP_Rate']
 # 0.821
     
@@ -30,7 +30,7 @@ def split_stock_data(stock_data, label_column, delete_column, test_size = 0.3,
     return X_train, X_test, y_train, y_test, feature_names
 
 label_column = 'LABEL'
-delete_column = ['LABEL', 'Volume_x', 'Next_5Day_Return']
+delete_column = ['LABEL', 'Next_5Day_Return']
 accuracies = []
 
 # 分割資料
