@@ -61,7 +61,7 @@ print(f"訓練時間: {training_time // 60:.2f} 分 {training_time % 60:.2f} 秒
 # 0.821
 
 # 在這裡，因 train_test_split 抽選資料為隨機抽取，並且輸出的資料完全不可回朔，僅能自
-# 行添加欄位回朔。
+# 行添加欄位回朔，不利於本繪圖的時間資料。
 import matplotlib.colors as mcolors
 import matplotlib.patches as patches
 
@@ -81,7 +81,8 @@ def darw(result):
     plt.rcParams['font.family'] = 'Microsoft JhengHei' # 設置中文字體
     plt.figure(figsize = (12, 6), facecolor = 'black')
     plt.xlabel("交易日（週）", fontsize = 11, color = 'white') # x 軸的標籤
-    plt.title('XOR 運算結果', color = 'white')
+    plt.title('模型預測分布情形', fontsize = 14, color = 'white', 
+              va = 'baseline')
      
     # 設定配色
     colors = ['#636363', '#00EB00', '#ABABAB'] # 黑、綠、灰
@@ -114,7 +115,12 @@ def darw(result):
                [i if i != 0 else 1 for i in range(0, len(result) // 5, 5)], 
                fontsize = 10, color = 'white')
     plt.yticks(range(5), ['1st', '2nd', '3rd', '4th', '5th'], 
-               fontsize = 9, color = 'white')
+               fontsize = 9, color = 'white', ha = 'left')
+    plt.tick_params(axis = 'y', pad = 16) # 因 ha = 'left' 時會導致重疊顯示，需校正
+# =============================================================================
+#     axis：指定軸
+#     pad：偏移量，正值左移參考軸，負值右移。pad 是刻度標籤與刻度線之間的距離
+# =============================================================================
     
     # 創建圖例框
     legend_labels = ['自動補齊', '答對', '答錯']
@@ -136,7 +142,7 @@ def darw(result):
     
     # 添加圖例
     plt.legend(handles = legend_elements, loc = 'upper left',
-               ncol = 3, bbox_to_anchor = (-0.01, 1.6), 
+               ncol = 3, bbox_to_anchor = (-0.01, 1.55), 
                facecolor = 'black', labelcolor = 'w')
 # =============================================================================
 #     loc：圖例於圖表中的位置
