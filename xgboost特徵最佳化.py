@@ -57,12 +57,12 @@ print(f"結果資料型態 {type(xor_result)}")
 print(f"結果資料筆數 {len(xor_result)}")
     
 print('Xgboost測試集準確率 %.3f' % test_acc)
-print(f"訓練時間: {training_time // 60:.2f} 分 {training_time % 60:.2f} 秒")
+print(f"訓練時間: {training_time // 60:.0f} 分 {training_time % 60:.2f} 秒")
 # 0.821
 
 
-# 在這裡，因 train_test_split 抽選資料為隨機抽取(並不連續)，並且輸出的資料完全不可回
-# 朔，僅能自行添加欄位回朔，不利於本繪圖的時間資料。
+# 這裡本圖僅參考分布，不具實際應用意義，因 train_test_split 抽選資料為隨機抽取(並不
+# 連續)，並且輸出的資料完全不可回朔，僅能自行添加欄位回朔，不利於本繪圖的時間資料。
 import matplotlib.colors as mcolors
 import matplotlib.patches as patches
 
