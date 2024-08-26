@@ -60,8 +60,9 @@ print('Xgboost測試集準確率 %.3f' % test_acc)
 print(f"訓練時間: {training_time // 60:.2f} 分 {training_time % 60:.2f} 秒")
 # 0.821
 
-# 在這裡，因 train_test_split 抽選資料為隨機抽取，並且輸出的資料完全不可回朔，僅能自
-# 行添加欄位回朔，不利於本繪圖的時間資料。
+
+# 在這裡，因 train_test_split 抽選資料為隨機抽取(並不連續)，並且輸出的資料完全不可回
+# 朔，僅能自行添加欄位回朔，不利於本繪圖的時間資料。
 import matplotlib.colors as mcolors
 import matplotlib.patches as patches
 
@@ -85,9 +86,12 @@ def darw(result):
               va = 'baseline')
      
     # 設定配色
-    colors = ['#636363', '#00EB00', '#ABABAB'] # 黑、綠、灰
+    colors = ['#636363', '#00EB00', '#9c9c9c'] # 黑、綠、灰
     cmap = mcolors.ListedColormap(colors) # 自訂顏色映射:補齊、0(對) 、1(錯)
     bounds = [-1, 0, 1, 2] # -1：補齊數據, 0：原始數據, 1：補齊數據
+# =============================================================================
+#     bounds 的 2 是用來定義顏色映射的邊界範圍，並且它不會直接影響圖像中的顏色。
+# =============================================================================
     norm = mcolors.BoundaryNorm(bounds, cmap.N)
        
     # 繪製圖像
@@ -128,7 +132,7 @@ def darw(result):
                                   color = color, 
                                   lw = 6, 
                                   label = label) for color, 
-                       label in zip(colors, legend_labels)]
+                       label in zip(colors[1:], legend_labels[1:])]
 # =============================================================================
 #     plt.Line2D：
 #     
