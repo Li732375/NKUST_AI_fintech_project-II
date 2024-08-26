@@ -176,15 +176,24 @@ test_df = test_df.sort_values(by = 'DATE', ascending = False) # 依時間排序
 #print("test_df type: ", type(test_df))
 #print("test_df len: ", len(test_df))
 #print('test_df columns：\n', test_df.columns)
-#print("test_df head:\n", test_df.head())
+print("test_df head:\n", test_df.head())
 #print("test_df tail:\n", test_df.tail())
 
 # 繪製熱量圖
 heatmap_darw(test_df['xor_result'])
 
 # 設定繪圖參數
-KLine_df = test_df.resample('W').agg({'Open': 'first', 'High': 'max', 
+KLine_df = test_df.resample('5D').agg({'Open': 'first', 'High': 'max', 
                                       'Low': 'min', 'Close': 'last'})
+# =============================================================================
+# 格式 欄位: 聚合方法
+# 'Open': 'first' 在取樣時段內，首筆 Open 欄的值
+# 'High': 'max' 在取樣時段內，High 欄的最大值
+# 'Low': 'min' 在取樣時段內，Low 欄的最大值
+# 'Close': 'last' 在取樣時段內，最後一筆 Close 欄的值
+# =============================================================================
+
+print("KLine_df len: ", len(KLine_df))
 # 綠漲紅跌
 KLine_df['Color'] = KLine_df.apply(lambda row: 'g' if row['Close'] > 
                                    row['Open'] else 'r', axis = 1)
