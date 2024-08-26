@@ -72,10 +72,8 @@ print(f"訓練時間: {training_time // 60:.0f} 分 {training_time % 60:.2f} 秒
 import matplotlib.colors as mcolors
 import matplotlib.patches as patches
 
-# 有一維的二元數據（長度不定）
-result = pd.Series(xor_result)
 
-def darw(result):
+def heatmap_darw(result):
     num_columns = 5 # 每列 5 筆數據
     num_rows = (len(result) + num_columns - 1) // num_columns # 計算需要的行數
     data_padded = np.pad(result, 
@@ -162,26 +160,27 @@ def darw(result):
 #     labelcolor：圖例統一文字顏色
 # =============================================================================
     
-darw(result[:])
-
 
 # 將 numpy.ndarray 接回成 DataFrame
 train_df = pd.DataFrame(trainX, columns = feature_names)
 test_df = pd.DataFrame(testX, columns = feature_names)
+test_df['xor_result'] = xor_result
 #print("Train DataFrame:\n", train_df.head())
 #print("\nTest DataFrame:\n", test_df.head())
 
 # 使用 'Index' 進行回朔資料
-test_df = test_df[['Index','Open']].merge(df[['DATE', 'Index', 'High', 'Low', 
-                                              'Close']], on = 'Index', 
-                                          how = 'left')
+test_df = test_df[['Index', 'Open', 'xor_result']].merge(
+    df[['DATE', 'Index', 'High', 'Low', 'Close']], on = 'Index', how = 'left')
 test_df.set_index('DATE', inplace = True)
 test_df = test_df.sort_values(by = 'DATE', ascending = False) # 依時間排序
-print("test_df type: ", type(test_df))
+#print("test_df type: ", type(test_df))
+#print("test_df len: ", len(test_df))
 #print('test_df columns：\n', test_df.columns)
-print("test_df:\n", test_df.head())
-print("test_df:\n", test_df.tail())
+#print("test_df head:\n", test_df.head())
+#print("test_df tail:\n", test_df.tail())
 
+# 繪製熱量圖
+heatmap_darw(test_df['xor_result'])
 
 # 設定繪圖參數
 KLine_df = test_df.resample('W').agg({'Open': 'first', 'High': 'max', 
