@@ -15,8 +15,8 @@ df = pd.read_excel('data.xlsx')
 df['Index'] = range(len(df))
 
 #print(df.columns)
-feature_names = ['Gold_Close', 'Gold_High', 'CPIAUCNS', 'Gold_Open', 'UNRATE', 'MA_20', 
-                 'MA_10', 'USD_Index_Growth_Rate', 'TW_CPI_Rate', 
+feature_names = ['Gold_Close', 'Gold_High', 'CPIAUCNS', 'Gold_Open', 'UNRATE', 
+                 'MA_20', 'MA_10', 'USD_Index_Growth_Rate', 'TW_CPI_Rate', 
                  'WILLR', 'Open', 'K', 'RSI_14', 'Gold_Volume', 
                  'Gold_Growth_Rate', 'FEDFUNDS', 'Bollinger Bands lower', 
                  'Bollinger Bands Upper', 'USA_GDP_Rate', 'Index']
@@ -39,8 +39,9 @@ delete_column = ['LABEL', 'Next_5Day_Return']
 accuracies = []
 
 # 分割資料
-trainX, testX, trainY, testY, feature_names = split_stock_data(df, label_column, 
-                                                delete_column)
+trainX, testX, trainY, testY, feature_names = split_stock_data(df, 
+                                                               label_column, 
+                                                               delete_column)
 Xgboost = XGBClassifier()
 start_time = time.time()
 Xgboost.fit(trainX, trainY)
@@ -93,7 +94,8 @@ def heatmap_darw(testX, feature_names):
 
     
     # 生成分組標籤
-    group_labels = np.arange(len(test_df) // 5 + (1 if len(test_df) % 5 > 0 else 0))
+    group_labels = np.arange(
+        len(test_df) // 5 + (1 if len(test_df) % 5 > 0 else 0))
     group_labels = np.repeat(group_labels, 5)[:len(test_df)]  # 重複標籤並修正長度
 
     test_df['Group'] = group_labels
