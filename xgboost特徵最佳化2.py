@@ -136,7 +136,7 @@ def heatmap_darw(testX, feature_names):
     plt.xticks([0, 4] + [i for i in range(9, len(KLine_df), 5)], 
                [1 if i == 0 else i for i in range(0, len(KLine_df), 5)],) # 不可隱藏，會影響網格直線的繪製
     plt.yticks(fontsize = 10, color = 'white')
-    plt.ylabel('價格', fontsize = 11, color = 'white')
+    plt.ylabel('匯率', fontsize = 11, color = 'white')
     plt.title('【週 K 線】 與 【模型預測分布】 對照圖', fontsize = 14, 
               color = 'white', va = 'baseline')    
     plt.grid(True)
