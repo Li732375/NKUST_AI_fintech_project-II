@@ -58,10 +58,7 @@ xor_result = np.bitwise_xor(test_predic, testY)
 # 如果 test_predic[i] 和 testY[i] 相同（即模型預測正確），則 XOR 結果為 0。
 # 如果 test_predic[i] 和 testY[i] 不同（即模型預測錯誤），則 XOR 結果為 1。
 # =============================================================================
-print(f"結果資料型態 {type(xor_result)}")
-print(f"結果資料筆數 {len(xor_result)}")
-#print(f"XOR 運算結果:\n{xor_result}")
-    
+
 print('Xgboost測試集準確率 %.3f' % test_acc)
 print(f"訓練時間: {training_time // 60:.0f} 分 {training_time % 60:.2f} 秒")
 # 0.821
@@ -73,7 +70,7 @@ import matplotlib.colors as mcolors
 import matplotlib.patches as patches
 
 
-def heatmap_darw():
+def heatmap_darw(testX, feature_names):
     # 將 numpy.ndarray 接回成 DataFrame
     test_df = pd.DataFrame(testX, columns = feature_names)
     test_df['xor_result'] = xor_result
@@ -94,28 +91,29 @@ def heatmap_darw():
             'Close': group['Close'].iloc[-1] # 最後一筆 Close 值
         })
 
-    # 設定分組標籤
-    remainder = len(test_df) % 5
-
+    
     # 生成分組標籤
-    group_labels = np.arange(len(test_df) // 5 + (1 if remainder > 0 else 0))
+    group_labels = np.arange(len(test_df) // 5 + (1 if len(test_df) % 5 > 0 else 0))
     group_labels = np.repeat(group_labels, 5)[:len(test_df)]  # 重複標籤並修正長度
 
     test_df['Group'] = group_labels
 
     # 根據分組進行聚合
-    KLine_df = test_df.groupby('Group').apply(
-        aggregate_group).reset_index(drop = True)
-
-    print("KLine_df len: ", len(KLine_df))
-
-    # 綠漲紅跌
+    KLine_df = test_df.groupby(by = 'Group').apply(
+        aggregate_group, include_groups = False).reset_index(drop = True)
+# =============================================================================
+#     # DeprecationWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+#     KLine_df = test_df.groupby(by = 'Group').apply(
+#         aggregate_group).reset_index(drop = True)
+# =============================================================================
+    
+    # 設定綠漲紅跌
     KLine_df['Color'] = KLine_df.apply(lambda row: 'g' if row['Close'] > 
                                        row['Open'] else 'r', axis = 1)
 
     # 繪製 K 線圖
     plt.figure(figsize = (12, 6), facecolor = 'black')
-    plt.subplot(2, 1, 1).set_facecolor('black')
+    plt.subplot(2, 1, 1).set_facecolor('black') # 設該子圖背景為黑色
     # =========================================================================
     # plt.subplot(nrows, ncols, index)
     # nrows：子圖的列數，垂直向要切成幾張子圖。
@@ -128,19 +126,29 @@ def heatmap_darw():
         row = KLine_df.iloc[i]
         color = row['Color']
         plt.plot([KLine_df.index[i], KLine_df.index[i]], 
-                 [row['Low'], row['High']], color = color, linewidth = 1)  # 垂直線
+                 [row['Low'], row['High']], color = color, linewidth = 1) # 垂直細線
         plt.plot([KLine_df.index[i], KLine_df.index[i]], 
-                 [row['Open'], row['Close']], color = color, linewidth = 5)  # K 棒
-
+                 [row['Open'], row['Close']], color = color, linewidth = 5) # 垂直粗線
 
     plt.xlim(-0.5, len(KLine_df) - 0.5) # 調整距離，與下圖對應
     plt.gca().axes.get_xaxis().set_visible(False) # 隱藏 x 軸
     plt.yticks(fontsize = 10, color = 'white')
     plt.ylabel('價格', fontsize = 11, color = 'white')
     plt.title('【週 K 線】 與 【模型預測分布】 對照圖', fontsize = 14, 
-              color = 'white', va = 'baseline')
-    
+              color = 'white', va = 'baseline')    
     plt.grid(True)
+    
+    # 添加上圖例（但參考依據是下子圖物件）
+    colors = ['g', 'r']
+    legend_labels = ['上漲', '下跌']
+    legend_elements = [plt.Line2D([], [], linestyle = '-.', 
+                                  color = colors, 
+                                  lw = 6, 
+                                  label = label) for colors, 
+                       label in zip(colors, legend_labels)]
+    plt.legend(handles = legend_elements, loc = 'upper left',
+               ncol = 2, bbox_to_anchor = (-0.01, 1.13), 
+               facecolor = 'black', labelcolor = 'w')
     
     
     # 繪製熱量圖
@@ -240,5 +248,4 @@ def heatmap_darw():
     
     plt.subplots_adjust(hspace = -0.3)  # 調整子圖之間的垂直間距
     
-
-heatmap_darw()
+heatmap_darw(testX, feature_names)
