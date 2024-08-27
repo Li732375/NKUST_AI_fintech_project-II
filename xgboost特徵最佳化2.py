@@ -12,6 +12,7 @@ import time
 
 # 讀取數據
 df = pd.read_excel('data.xlsx')
+print(f"總資料數：{len(df)}")
 df['Index'] = range(len(df))
 
 #print(df.columns)
