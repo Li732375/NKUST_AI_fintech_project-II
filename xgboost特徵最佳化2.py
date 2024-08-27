@@ -133,7 +133,8 @@ def heatmap_darw(testX, feature_names):
                  [row['Open'], row['Close']], color = color, linewidth = 5) # 垂直粗線
 
     plt.xlim(-0.5, len(KLine_df) - 0.5) # 調整距離，與下圖對應
-    plt.xticks() # 不可隱藏，會影響網格直線的繪製
+    plt.xticks([0, 4] + [i for i in range(9, len(KLine_df), 5)], 
+               [1 if i == 0 else i for i in range(0, len(KLine_df), 5)],) # 不可隱藏，會影響網格直線的繪製
     plt.yticks(fontsize = 10, color = 'white')
     plt.ylabel('價格', fontsize = 11, color = 'white')
     plt.title('【週 K 線】 與 【模型預測分布】 對照圖', fontsize = 14, 
@@ -203,9 +204,9 @@ def heatmap_darw(testX, feature_names):
         spine.set_edgecolor('#636363')
         spine.set_linewidth(1)
     
-    # 設置刻度字體大小
-    plt.xticks([i for i in range(0, len(result) // 5, 5)], 
-               [i if i != 0 else 1 for i in range(0, len(result) // 5, 5)], 
+    # 設定刻度
+    plt.xticks([0, 4] + [i for i in range(9, len(KLine_df), 5)], 
+               [1 if i == 0 else i for i in range(0, len(KLine_df), 5)], 
                fontsize = 10, color = 'white')
     plt.yticks(range(5), ['1st', '2nd', '3rd', '4th', '5th'], 
                fontsize = 9, color = 'white', ha = 'left')
