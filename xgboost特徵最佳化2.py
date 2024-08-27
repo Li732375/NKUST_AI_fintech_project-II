@@ -133,7 +133,7 @@ def heatmap_darw(testX, feature_names):
                  [row['Open'], row['Close']], color = color, linewidth = 5) # 垂直粗線
 
     plt.xlim(-0.5, len(KLine_df) - 0.5) # 調整距離，與下圖對應
-    plt.gca().axes.get_xaxis().set_visible(False) # 隱藏 x 軸
+    plt.xticks() # 不可隱藏，會影響網格直線的繪製
     plt.yticks(fontsize = 10, color = 'white')
     plt.ylabel('價格', fontsize = 11, color = 'white')
     plt.title('【週 K 線】 與 【模型預測分布】 對照圖', fontsize = 14, 
@@ -152,7 +152,7 @@ def heatmap_darw(testX, feature_names):
                ncol = 2, bbox_to_anchor = (-0.01, 1.13), 
                facecolor = 'black', labelcolor = 'w')
     
-    
+# =============================================================================
     # 繪製熱量圖
     result = test_df['xor_result']
     
