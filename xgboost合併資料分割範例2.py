@@ -9,11 +9,11 @@ import matplotlib.pyplot as plt
 df = pd.read_excel("data.xlsx")
 print(f"總資料數：{len(df)}")
 
-feature_names = ['Close_y', 'High_y', 'CPIAUCNS', 'Open_y', 'UNRATE', 'MA_20', 
-                 'MA_10', 'Growth Rate_x', 'TW_CPI_Rate', 
-                 'WILLR', 'Open_x', 'K', 'RSI_14', 'Volume_y', 
-                 'Growth Rate_y', 'FEDFUNDS', 'Bollinger Bands lower', 
-                 'Bollinger Bands Upper', 'USA_GDP_Rate']
+feature_names = ['Gold_Close', 'Gold_High', 'CPIAUCNS', 'Gold_Open', 'UNRATE', 
+                 'MA_20', 'MA_10', 'USD_Index_Growth_Rate', 'TW_CPI_Rate', 
+                 'WILLR', 'Open', 'K', 'RSI_14', 'Gold_Volume', 
+                 'Gold_Growth_Rate', 'FEDFUNDS', 'Bollinger Bands lower', 
+                 'Bollinger Bands Upper', 'USA_GDP_Rate', 'Index']
 
 label_column = 'LABEL'
 
@@ -60,18 +60,15 @@ for i, (train_index, test_index) in enumerate(TSS.split(X, y)):
     # 訓練 XGBoost 模型
     Xgboost = XGBClassifier()
     start_time = time.time()
-    #print(sub_test)
     Xgboost.fit(sub_trainX, sub_trainY)
     training_time = time.time() - start_time
     
     # 預測結果和模型準確率
-    #test_predic = Xgboost.predict(testX)
-    #test_acc = Xgboost.score(testX, testY)
     test_acc = Xgboost.score(sub_testX, sub_testY)
     test_scores.append(test_acc)
     
     print('Xgboost測試集準確率 %.3f' % test_acc)
-    print(f"訓練時間: {training_time // 60:.2f} 分 {training_time % 60:.2f} 秒")
+    print(f"訓練時間: {training_time // 60:.0f} 分 {training_time % 60:.2f} 秒")
 
 
 
@@ -91,10 +88,3 @@ def calculate_overlap_rate(indices_list):
 overlap_rate = calculate_overlap_rate(split_indices)
 print(f"資料彼此重疊率：{overlap_rate * 100:.2f} %")
 
-# 顯示數據
-plt.rcParams['font.family'] = 'Microsoft JhengHei' # 設置中文字體
-plt.plot(range(1, len(test_scores) + 1), test_scores, marker = 'o', label = '測試集準確率')
-plt.xlabel("Date")
-plt.ylabel("準確率")
-plt.title("分批訓練準確率")
-plt.legend()
