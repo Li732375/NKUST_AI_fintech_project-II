@@ -73,7 +73,79 @@ import matplotlib.colors as mcolors
 import matplotlib.patches as patches
 
 
-def heatmap_darw(result):
+def heatmap_darw():
+    # 將 numpy.ndarray 接回成 DataFrame
+    test_df = pd.DataFrame(testX, columns = feature_names)
+    test_df['xor_result'] = xor_result
+
+    # 使用 'Index' 進行回朔資料
+    test_df = test_df[['Index', 'Open', 'xor_result']].merge(
+        df[['DATE', 'Index', 'High', 'Low', 'Close']], on = 'Index', 
+        how = 'left')
+    test_df.set_index('DATE', inplace = True)
+    test_df = test_df.sort_values(by = 'DATE', ascending = False) # 依時間排序
+
+    # 定義函數計算每個分組的聚合值
+    def aggregate_group(group):
+        return pd.Series({
+            'Open': group['Open'].iloc[0],  # 第一筆 Open 值
+            'High': group['High'].max(),    # 最大 High 值
+            'Low': group['Low'].min(),      # 最小 Low 值
+            'Close': group['Close'].iloc[-1] # 最後一筆 Close 值
+        })
+
+    # 設定分組標籤
+    remainder = len(test_df) % 5
+
+    # 生成分組標籤
+    group_labels = np.arange(len(test_df) // 5 + (1 if remainder > 0 else 0))
+    group_labels = np.repeat(group_labels, 5)[:len(test_df)]  # 重複標籤並修正長度
+
+    test_df['Group'] = group_labels
+
+    # 根據分組進行聚合
+    KLine_df = test_df.groupby('Group').apply(
+        aggregate_group).reset_index(drop = True)
+
+    print("KLine_df len: ", len(KLine_df))
+
+    # 綠漲紅跌
+    KLine_df['Color'] = KLine_df.apply(lambda row: 'g' if row['Close'] > 
+                                       row['Open'] else 'r', axis = 1)
+
+    # 繪製 K 線圖
+    plt.figure(figsize = (12, 6), facecolor = 'black')
+    plt.subplot(2, 1, 1).set_facecolor('black')
+    # =========================================================================
+    # plt.subplot(nrows, ncols, index)
+    # nrows：子圖的列數，垂直向要切成幾張子圖。
+    # ncols：子圖的欄數，水平向要切成幾張子圖。
+    # index：子圖索引，從 1 開始，由左至右的順序排列。
+    # =========================================================================
+
+    # 繪製 K 棒
+    for i in range(len(KLine_df)):
+        row = KLine_df.iloc[i]
+        color = row['Color']
+        plt.plot([KLine_df.index[i], KLine_df.index[i]], 
+                 [row['Low'], row['High']], color = color, linewidth = 1)  # 垂直線
+        plt.plot([KLine_df.index[i], KLine_df.index[i]], 
+                 [row['Open'], row['Close']], color = color, linewidth = 5)  # K 棒
+
+
+    plt.xlim(-0.5, len(KLine_df) - 0.5) # 調整距離，與下圖對應
+    plt.gca().axes.get_xaxis().set_visible(False) # 隱藏 x 軸
+    plt.yticks(fontsize = 10, color = 'white')
+    plt.ylabel('價格', fontsize = 11, color = 'white')
+    plt.title('【週 K 線】 與 【模型預測分布】 對照圖', fontsize = 14, 
+              color = 'white', va = 'baseline')
+    
+    plt.grid(True)
+    
+    
+    # 繪製熱量圖
+    result = test_df['xor_result']
+    
     num_columns = 5 # 每列 5 筆數據
     num_rows = (len(result) + num_columns - 1) // num_columns # 計算需要的行數
     data_padded = np.pad(result, 
@@ -82,12 +154,15 @@ def heatmap_darw(result):
     
     # 重塑為每列 5 筆數據的二維矩陣
     result_2d = data_padded.reshape(num_rows, num_columns).T  # 轉置以符合每列顯示的要求
-
+    
     plt.rcParams['font.family'] = 'Microsoft JhengHei' # 設置中文字體
-    plt.figure(figsize = (12, 6), facecolor = 'black')
-    plt.xlabel("交易日（週）", fontsize = 11, color = 'white') # x 軸的標籤
-    plt.title('模型預測分布情形', fontsize = 14, color = 'white', 
-              va = 'baseline')
+    plt.subplot(2, 1, 2)
+    # =========================================================================
+    # plt.subplot(nrows, ncols, index)
+    # nrows：子圖的列數，垂直向要切成幾張子圖。
+    # ncols：子圖的欄數，水平向要切成幾張子圖。
+    # index：子圖索引，從 1 開始，由左至右的順序排列。
+    # =========================================================================
      
     # 設定配色
     colors = ['#636363', '#00EB00', '#9c9c9c'] # 黑、綠、灰
@@ -124,6 +199,9 @@ def heatmap_darw(result):
                fontsize = 10, color = 'white')
     plt.yticks(range(5), ['1st', '2nd', '3rd', '4th', '5th'], 
                fontsize = 9, color = 'white', ha = 'left')
+    plt.xlabel("交易日（週）", fontsize = 11, color = 'white') # x 軸的標籤
+    plt.ylabel("每組交易日次序", fontsize = 11, color = 'white') # x 軸的標籤
+    
     plt.tick_params(axis = 'y', pad = 16) # 因 ha = 'left' 時會導致重疊顯示，需校正
 # =============================================================================
 #     axis：指定軸
@@ -149,8 +227,8 @@ def heatmap_darw(result):
 # =============================================================================
     
     # 添加圖例
-    plt.legend(handles = legend_elements, loc = 'upper left',
-               ncol = 3, bbox_to_anchor = (-0.01, 1.55), 
+    plt.legend(handles = legend_elements, loc = 'lower left',
+               ncol = 3, bbox_to_anchor = (-0.005, -0.9), 
                facecolor = 'black', labelcolor = 'w')
 # =============================================================================
 #     loc：圖例於圖表中的位置
@@ -160,58 +238,7 @@ def heatmap_darw(result):
 #     labelcolor：圖例統一文字顏色
 # =============================================================================
     
+    plt.subplots_adjust(hspace = -0.3)  # 調整子圖之間的垂直間距
+    
 
-# 將 numpy.ndarray 接回成 DataFrame
-train_df = pd.DataFrame(trainX, columns = feature_names)
-test_df = pd.DataFrame(testX, columns = feature_names)
-test_df['xor_result'] = xor_result
-#print("Train DataFrame:\n", train_df.head())
-#print("\nTest DataFrame:\n", test_df.head())
-
-# 使用 'Index' 進行回朔資料
-test_df = test_df[['Index', 'Open', 'xor_result']].merge(
-    df[['DATE', 'Index', 'High', 'Low', 'Close']], on = 'Index', how = 'left')
-test_df.set_index('DATE', inplace = True)
-test_df = test_df.sort_values(by = 'DATE', ascending = False) # 依時間排序
-#print("test_df type: ", type(test_df))
-#print("test_df len: ", len(test_df))
-#print('test_df columns：\n', test_df.columns)
-print("test_df head:\n", test_df.head())
-#print("test_df tail:\n", test_df.tail())
-
-# 繪製熱量圖
-heatmap_darw(test_df['xor_result'])
-
-# 設定繪圖參數
-KLine_df = test_df.resample('5D').agg({'Open': 'first', 'High': 'max', 
-                                      'Low': 'min', 'Close': 'last'})
-# =============================================================================
-# 格式 欄位: 聚合方法
-# 'Open': 'first' 在取樣時段內，首筆 Open 欄的值
-# 'High': 'max' 在取樣時段內，High 欄的最大值
-# 'Low': 'min' 在取樣時段內，Low 欄的最大值
-# 'Close': 'last' 在取樣時段內，最後一筆 Close 欄的值
-# =============================================================================
-
-print("KLine_df len: ", len(KLine_df))
-# 綠漲紅跌
-KLine_df['Color'] = KLine_df.apply(lambda row: 'g' if row['Close'] > 
-                                   row['Open'] else 'r', axis = 1)
-
-# 繪製 K 線圖
-plt.figure(figsize = (12, 6))
-
-# 繪製 K 棒
-for i in range(len(KLine_df)):
-    row = KLine_df.iloc[i]
-    color = row['Color']
-    plt.plot([KLine_df.index[i], KLine_df.index[i]], 
-             [row['Low'], row['High']], color = color, linewidth = 1)  # 垂直線
-    plt.plot([KLine_df.index[i], KLine_df.index[i]], 
-             [row['Open'], row['Close']], color = color, linewidth = 5)  # K 棒
-
-plt.xlabel('週')
-plt.ylabel('價格')
-plt.title('週 K 線圖')
-plt.xticks(rotation = 45)
-plt.grid(True)
+heatmap_darw()
