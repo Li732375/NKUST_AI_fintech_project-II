@@ -13,7 +13,7 @@ feature_names = ['Gold_Close', 'Gold_High', 'CPIAUCNS', 'Gold_Open', 'UNRATE',
                  'MA_20', 'MA_10', 'USD_Index_Growth_Rate', 'TW_CPI_Rate', 
                  'WILLR', 'Open', 'K', 'RSI_14', 'Gold_Volume', 
                  'Gold_Growth_Rate', 'FEDFUNDS', 'Bollinger Bands lower', 
-                 'Bollinger Bands Upper', 'USA_GDP_Rate', 'Index']
+                 'Bollinger Bands Upper', 'USA_GDP_Rate']
 
 label_column = 'LABEL'
 
@@ -46,12 +46,12 @@ for i, (train_index, test_index) in enumerate(TSS.split(X, y)):
     test_len = len(sub_test_index)
     all_len = train_len + test_len
     
+    print('--------------')
     print(f"第 {i+1} 份")
     print(f"子訓練集資料數：{train_len}")
-    print(f"子測試集資料數：{test_len} (佔該份 {test_len / all_len * 100:.1f} %)")
+    print(f"子測試集資料數：{test_len} (佔總體 {test_len / all_len * 100:.1f} %)")
     print(f"子訓練集索引（頭尾 5 個）：{sub_train_index.index.tolist()[:5]}...{sub_train_index.index.tolist()[-5:]}")
     print(f"子測試集索引（頭尾 5 個）：{sub_test_index.index.tolist()[:5]}...{sub_test_index.index.tolist()[-5:]}")
-    print('--------------')
     
     # 提取訓練集和測試集
     sub_trainX, sub_testX = X[train_index], X[test_index]
@@ -88,3 +88,10 @@ def calculate_overlap_rate(indices_list):
 overlap_rate = calculate_overlap_rate(split_indices)
 print(f"資料彼此重疊率：{overlap_rate * 100:.2f} %")
 
+# 顯示每批準確度變化
+plt.rcParams['font.family'] = 'Microsoft JhengHei' # 設置中文字體
+plt.plot(range(1, len(test_scores) + 1), test_scores, marker = 'o', label = '測試集準確率')
+plt.xlabel("序位（批）")
+plt.ylabel("準確率")
+plt.title("分批訓練準確率")
+plt.legend()
