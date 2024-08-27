@@ -181,11 +181,11 @@ def heatmap_darw(testX, feature_names):
 # =============================================================================
     norm = mcolors.BoundaryNorm(bounds, cmap.N)
        
-    # 繪製圖像
+    # 繪圖
     plt.imshow(result_2d, cmap = cmap, norm = norm, interpolation = 'none', 
                aspect = 'equal')
     
-    # 繪製每個方格的邊框
+    # 加繪每個方格的邊框
     ax = plt.gca()
     num_rows, num_columns = result_2d.shape
     
@@ -217,7 +217,7 @@ def heatmap_darw(testX, feature_names):
 # =============================================================================
     
     # 創建圖例框
-    legend_labels = ['自動補齊', '答對', '答錯']
+    legend_labels = ['自動補齊', '正確預測', '錯誤預測']
     legend_elements = [plt.Line2D([], [], linestyle = '-.', 
                                   color = color, 
                                   lw = 6, 
