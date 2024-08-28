@@ -181,10 +181,10 @@ for i in range(60):
     df = pd.read_excel('data.xlsx')
 
     #print(df.columns)
-    feature_names = ['Close_y', 'High_y', 'CPIAUCNS', 'Open_y', 'UNRATE', 
-                     'MA_20', 'MA_10', 'Growth Rate_x', 'TW_CPI_Rate', 
-                     'WILLR', 'Open_x', 'K', 'RSI_14', 'Volume_y', 
-                     'Growth Rate_y', 'FEDFUNDS', 'Bollinger Bands lower', 
+    feature_names = ['Gold_Close', 'Gold_High', 'CPIAUCNS', 'Gold_Open', 'UNRATE', 
+                     'MA_20', 'MA_10', 'USD_Index_Growth_Rate', 'TW_CPI_Rate', 
+                     'WILLR', 'Open', 'K', 'RSI_14', 'Gold_Volume', 
+                     'Gold_Growth_Rate', 'FEDFUNDS', 'Bollinger Bands lower', 
                      'Bollinger Bands Upper', 'USA_GDP_Rate']
     # 0.821
         
