@@ -7,11 +7,12 @@ import time
 
 
 # 讀取數據
-df = pd.read_excel('data.xlsx')
+df = pd.read_excel('../data.xlsx')
+df_Latest = pd.read_excel("../data_Latest.xlsx")
 
 #print(df.columns)
-feature_names = ['Gold_Close', 'Gold_High', 'CPIAUCNS', 'Gold_Open', 'UNRATE', 'MA_20', 
-                 'MA_10', 'USD_Index_Growth_Rate', 'TW_CPI_Rate', 
+feature_names = ['Gold_Close', 'Gold_High', 'CPIAUCNS', 'Gold_Open', 'UNRATE', 
+                 'MA_20', 'MA_10', 'USD_Index_Growth_Rate', 'TW_CPI_Rate', 
                  'WILLR', 'Open', 'K', 'RSI_14', 'Gold_Volume', 
                  'Gold_Growth_Rate', 'FEDFUNDS', 'Bollinger Bands lower', 
                  'Bollinger Bands Upper', 'USA_GDP_Rate']
@@ -30,11 +31,12 @@ def split_stock_data(stock_data, label_column, test_size = 0.3,
     return X_train, X_test, y_train, y_test, feature_names
 
 label_column = 'LABEL'
-accuracies = []
 
 # 分割資料
 trainX, testX, trainY, testY, feature_names = split_stock_data(df, 
                                                                label_column)
+
+# 訓練模型
 Xgboost = XGBClassifier()
 start_time = time.time()
 Xgboost.fit(trainX, trainY)
@@ -42,6 +44,12 @@ training_time = time.time() - start_time
 
 test_predic = Xgboost.predict(testX) # 取得預測的結果
 test_acc = Xgboost.score(testX, testY)
+
+# 近期數據測試
+X_Latest = df_Latest[feature_names].values
+y_Latest = df_Latest['LABEL'].values
+
+latest_data_test_acc = Xgboost.score(X_Latest, y_Latest)
 
 
 # 進行 XOR 運算
@@ -52,11 +60,13 @@ xor_result = np.bitwise_xor(test_predic, testY)
 # 如果 test_predic[i] 和 testY[i] 相同（即模型預測'正確'），則 XOR 結果為 0。
 # 如果 test_predic[i] 和 testY[i] 不同（即模型預測'錯誤'），則 XOR 結果為 1。
 # =============================================================================
-print(f"結果資料型態 {type(xor_result)}")
-print(f"結果資料筆數 {len(xor_result)}")
+#print(f"結果資料型態 {type(xor_result)}")
+#print(f"結果資料筆數 {len(xor_result)}")
     
 print('Xgboost測試集準確率 %.3f' % test_acc)
 print(f"訓練時間: {training_time // 60:.0f} 分 {training_time % 60:.2f} 秒")
+
+print('Xgboost近期數據測試準確率 %.3f' % latest_data_test_acc)
 # 0.821
 
 
@@ -145,7 +155,7 @@ def darw(result):
     
     # 添加圖例
     plt.legend(handles = legend_elements, loc = 'upper left',
-               ncol = 3, bbox_to_anchor = (-0.01, 1.55), 
+               ncol = 3, bbox_to_anchor = (-0.01, 1.3), 
                facecolor = 'black', labelcolor = 'w')
 # =============================================================================
 #     loc：圖例於圖表中的位置
