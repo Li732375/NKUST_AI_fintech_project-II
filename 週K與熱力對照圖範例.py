@@ -15,6 +15,9 @@ df = pd.read_excel('data.xlsx')
 print(f"總資料數：{len(df)}")
 df['Index'] = range(len(df))
 
+df_Latest = pd.read_excel("data_Latest.xlsx")
+
+
 #print(df.columns)
 feature_names = ['Gold_Close', 'Gold_High', 'CPIAUCNS', 'Gold_Open', 'UNRATE', 
                  'MA_20', 'MA_10', 'USD_Index_Growth_Rate', 'TW_CPI_Rate', 
@@ -23,7 +26,7 @@ feature_names = ['Gold_Close', 'Gold_High', 'CPIAUCNS', 'Gold_Open', 'UNRATE',
                  'Bollinger Bands Upper', 'USA_GDP_Rate', 'Index']
 # 0.821
     
-def split_stock_data(stock_data, label_column, delete_column, test_size = 0.3, 
+def split_stock_data(stock_data, label_column, test_size = 0.3, 
                      random_state = 42):
     X = stock_data[feature_names].values
     y = stock_data[label_column].values
@@ -36,20 +39,30 @@ def split_stock_data(stock_data, label_column, delete_column, test_size = 0.3,
     return X_train, X_test, y_train, y_test, feature_names
 
 label_column = 'LABEL'
-delete_column = ['LABEL', 'Next_5Day_Return'] # 記得依據實際情形調整天數
-accuracies = []
 
 # 分割資料
 trainX, testX, trainY, testY, feature_names = split_stock_data(df, 
-                                                               label_column, 
-                                                               delete_column)
+                                                               label_column)
+
+# 訓練模型
 Xgboost = XGBClassifier()
+new_trainX = [feature_names.index('Index')] # 排除臨時新增欄位影響
+
 start_time = time.time()
-Xgboost.fit(trainX, trainY)
+Xgboost.fit(np.delete(trainX, new_trainX, axis = 1), 
+            trainY)
 training_time = time.time() - start_time
 
-test_predic = Xgboost.predict(testX) # 取得預測的結果
-test_acc = Xgboost.score(testX, testY)
+test_predic = Xgboost.predict(np.delete(testX, new_trainX, 
+                                        axis = 1)) # 取得預測的結果
+test_acc = Xgboost.score(np.delete(testX, new_trainX, 
+                                        axis = 1), testY)
+
+# 近期數據測試
+X_Latest = df_Latest[feature_names].drop('Index').values
+y_Latest = df_Latest['LABEL'].values
+
+latest_data_test_acc = Xgboost.score(X_Latest, y_Latest)
 
 
 # 進行 XOR 運算
@@ -63,6 +76,8 @@ xor_result = np.bitwise_xor(test_predic, testY)
 
 print('Xgboost測試集準確率 %.3f' % test_acc)
 print(f"訓練時間: {training_time // 60:.0f} 分 {training_time % 60:.2f} 秒")
+
+print('Xgboost近期數據測試準確率 %.3f' % latest_data_test_acc)
 # 0.821
 
 
