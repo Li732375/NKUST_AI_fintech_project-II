@@ -32,7 +32,7 @@ dxy_data['Growth Rate'] = dxy_data['Close'].pct_change() # 計算每日的成長
 print(dxy_data[['Close', 'Growth Rate']].head())# 輸出結果
 dxy_data = dxy_data[['Close', 'Growth Rate']]
 
-excel_filename = 'Dx-y_data.xlsx'
+excel_filename = 'Dx-y_Data.xlsx'
 dxy_data.to_excel(DataFolder + excel_filename)
 print("美元指數與成長率已保存至 '{DataFolder + excel_filename}'")
 
@@ -49,7 +49,7 @@ gold_data = yf.download("GC=F", start = Data_Time_Start, end = Data_Time_End)
 gold_data['Growth Rate'] = gold_data['Close'].pct_change() # 計算每日的成長率（百分比）
 print(gold_data[['Close', 'Growth Rate']].head())# 輸出結果
 
-excel_filename = 'Gold_data.xlsx'
+excel_filename = 'Gold_Data.xlsx'
 gold_data.to_excel(DataFolder + excel_filename)
 print("黃金價格已保存至 '{DataFolder + excel_filename}'")
 
