@@ -1,3 +1,7 @@
+# =============================================================================
+# 分批次個別訓練模型
+# =============================================================================
+
 import pandas as pd
 from sklearn.model_selection import TimeSeriesSplit
 import math
@@ -6,8 +10,11 @@ import time
 import matplotlib.pyplot as plt
 
 # 讀取資料
-df = pd.read_excel("data.xlsx")
+df = pd.read_excel("../data.xlsx")
 print(f"總資料數：{len(df)}")
+
+df_Latest = pd.read_excel("../data_Latest.xlsx")
+print(f"總資料數：{len(df_Latest)}")
 
 feature_names = ['Gold_Close', 'Gold_High', 'CPIAUCNS', 'Gold_Open', 'UNRATE', 
                  'MA_20', 'MA_10', 'USD_Index_Growth_Rate', 'TW_CPI_Rate', 
@@ -20,7 +27,9 @@ label_column = 'LABEL'
 X = df[feature_names].values
 y = df[label_column].values
 
-accuracies = []
+X_Latest = df_Latest[feature_names].values
+y_Latest = df_Latest[label_column].values
+
 
 n_splits = 24 # 設定分割數量
 overlap_rate = 3 * 0.1 + 1 # 設定每批訓練集之間的，最低重疊率
@@ -35,7 +44,8 @@ TSS = TimeSeriesSplit(n_splits = n_splits, max_train_size = max_train_size)
 # 儲存每個折的訓練集索引
 split_indices = [None for _ in range(n_splits)]
 labels = df['LABEL']
-test_scores = []
+batch_test_scores = []
+latest_test_scores = []
 
 # 逐步分割資料
 for i, (train_index, test_index) in enumerate(TSS.split(X, y)):
@@ -49,7 +59,7 @@ for i, (train_index, test_index) in enumerate(TSS.split(X, y)):
     print('--------------')
     print(f"第 {i+1} 份")
     print(f"子訓練集資料數：{train_len}")
-    print(f"子測試集資料數：{test_len} (佔總體 {test_len / all_len * 100:.1f} %)")
+    print(f"子測試集資料數：{test_len} (佔批次 {test_len / all_len * 100:.1f} %)")
     print(f"子訓練集索引（頭尾 5 個）：{sub_train_index.index.tolist()[:5]}...{sub_train_index.index.tolist()[-5:]}")
     print(f"子測試集索引（頭尾 5 個）：{sub_test_index.index.tolist()[:5]}...{sub_test_index.index.tolist()[-5:]}")
     
@@ -63,13 +73,16 @@ for i, (train_index, test_index) in enumerate(TSS.split(X, y)):
     Xgboost.fit(sub_trainX, sub_trainY)
     training_time = time.time() - start_time
     
-    # 預測結果和模型準確率
+    # 批次測試集預測結果和模型準確率
     test_acc = Xgboost.score(sub_testX, sub_testY)
-    test_scores.append(test_acc)
-    
+    batch_test_scores.append(test_acc)
+      
     print('Xgboost測試集準確率 %.3f' % test_acc)
     print(f"訓練時間: {training_time // 60:.0f} 分 {training_time % 60:.2f} 秒")
-
+    
+    # 最新資料測試
+    latest_data_test_acc = Xgboost.score(X_Latest, y_Latest)
+    latest_test_scores.append(latest_data_test_acc)
 
 
 # 計算重疊率
@@ -90,12 +103,14 @@ print(f"資料彼此重疊率：{overlap_rate * 100:.2f} %")
 
 # 顯示每批準確度變化
 plt.rcParams['font.family'] = 'Microsoft JhengHei' # 設置中文字體
-plt.plot(range(1, len(test_scores) + 1), test_scores, marker = 'o', 
-         label = '測試集準確率')
-plt.xticks([i for i in range(1, len(test_scores) + 1)])
+plt.plot(range(1, len(batch_test_scores) + 1), batch_test_scores, marker = 'o', 
+         label = '批次測試集準確率', color = 'blue')
+plt.plot(range(1, len(batch_test_scores) + 1), latest_test_scores, marker = 'o', 
+         label = '最新數據準確率', color = 'red')
+plt.xticks([i for i in range(1, len(batch_test_scores) + 1)])
 plt.xlabel("序位（批）")
 ytick = [i / 100 for i in range(0, 105, 10)]
 plt.yticks(ytick, [str(int(i * 100)) + ' %' for i in ytick])
 plt.ylabel("準確率")
-plt.title("分批訓練準確率")
-plt.legend()
+plt.title("分批個別訓練準確率")
+plt.legend(loc = 'lower left')
