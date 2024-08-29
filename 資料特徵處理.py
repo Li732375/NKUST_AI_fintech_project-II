@@ -3,7 +3,7 @@ import talib
 
 
 DataFolder = 'Ori_Data/'
-Currency_data = pd.read_excel(DataFolder + 'USDtoTWD_Currency_data.xlsx', 
+Currency_data = pd.read_excel(DataFolder + 'USDtoTWD_Currency_Data.xlsx', 
                               index_col = 'Date')  # 讀取匯率資料
 Currency_data.drop(columns = ['Adj Close'], inplace = True)
 df_open = Currency_data['Open']
@@ -54,8 +54,8 @@ USA_Unemployment_Rate = pd.read_excel(DataFolder + 'USA_Unemployment_Rate.xlsx')
 TW_CPI = pd.read_excel(DataFolder + 'TW_CPI.xlsx')
 USA_GDP = pd.read_excel(DataFolder + 'USA_GDP.xlsx')
 TW_Rate = pd.read_excel(DataFolder + 'TW_Rate.xlsx')
-DXY_NYB = pd.read_excel(DataFolder + 'Dx-y_data.xlsx')
-GOLD_data = pd.read_excel(DataFolder + 'Gold_data.xlsx')
+DXY_NYB = pd.read_excel(DataFolder + 'Dx-y_Data.xlsx')
+GOLD_data = pd.read_excel(DataFolder + 'Gold_Data.xlsx')
 
 # =============================================================================
 # merge_asof，用於合併兩個數據框，其中一個數據框的時間戳（或排序列）可能在另一個
@@ -147,7 +147,7 @@ df_merge[f'Next_{pre_day}Day_Return'] = \
 # =============================================================================
 
 def classify_return(x):
-    return 1 if x > 0 else 0  # 標示漲跌，大於0標示為漲(1)，小於0標示為跌(0)
+    return 1 if x > 0 else 0  # 標示漲跌，大於 0 標示為漲(1)，小於 0 標示為跌(0)
 
 df_merge['LABEL'] = \
     df_merge[f'Next_{pre_day}Day_Return'].apply(
