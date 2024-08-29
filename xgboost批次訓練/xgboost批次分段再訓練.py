@@ -141,7 +141,7 @@ plt.grid(True, axis = 'y')
 plt.legend(loc = 'lower left', facecolor = 'black', labelcolor = 'w')
 
 # =============================================================================
-# 顯示訓練集和測試集區間的橫條圖
+# 訓練集和測試集區間的橫條圖
 plt.figure(figsize = (12, 6))
 plt.gcf().patch.set_facecolor('black')  # 設置整個圖表背景為黑色
 plt.gca().set_facecolor('black')  # 設置坐標軸背景為黑色

@@ -92,7 +92,8 @@ def calculate_overlap_rate(indices_list):
     
     for i in range(len(indices_list)):
         for j in range(i + 1, len(indices_list)):
-            overlap_count = len(set(indices_list[i]).intersection(set(indices_list[j])))
+            overlap_count = len(set(indices_list[i]).intersection(
+                set(indices_list[j])))
             total_overlap += overlap_count
 
     overlap_rate = total_overlap / total_count
@@ -128,7 +129,7 @@ plt.grid(True, axis = 'y')
 plt.legend(loc = 'lower left', facecolor = 'black', labelcolor = 'w')
 
 # =============================================================================
-# 顯示訓練集和測試集區間的橫條圖
+# 訓練集和測試集區間的橫條圖
 plt.figure(figsize=(12, 6))
 plt.gcf().patch.set_facecolor('black')  # 設置整個圖表背景為黑色
 plt.gca().set_facecolor('black')  # 設置坐標軸背景為黑色
