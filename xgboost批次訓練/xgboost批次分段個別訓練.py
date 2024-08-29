@@ -104,5 +104,5 @@ print(f"資料彼此重疊率：{overlap_rate * 100:.2f} %")
 
 
 # 繪製圖形
-Plot.AccLineAndDataArea_Draw(batch_test_scores, latest_test_scores, 
+Plot.AccLineAndDataArea_Draw('分批個別訓練', batch_test_scores, latest_test_scores, 
                              TSS.split(X, y), len(df), n_splits)
