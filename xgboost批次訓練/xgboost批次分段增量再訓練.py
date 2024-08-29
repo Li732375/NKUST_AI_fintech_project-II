@@ -32,7 +32,6 @@ y_Latest = df_Latest[label_column].values
 
 
 n_splits = 24 # 設定分割數量
-overlap_rate = 3 * 0.1 + 1 # 設定每批訓練集之間的，最低重疊率
 
 # 初始化 TimeSeriesSplit
 TSS = TimeSeriesSplit(n_splits = n_splits)
