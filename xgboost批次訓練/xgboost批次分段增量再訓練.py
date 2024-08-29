@@ -93,5 +93,5 @@ for i, (train_index, test_index) in enumerate(TSS.split(X, y)):
 
 
 # 繪製圖形
-Plot.AccLineAndDataArea_Draw(batch_test_scores, latest_test_scores, 
+Plot.AccLineAndDataArea_Draw('批次增量再訓練', batch_test_scores, latest_test_scores, 
                              TSS.split(X, y), len(df), n_splits)
