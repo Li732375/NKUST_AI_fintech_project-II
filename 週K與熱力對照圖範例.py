@@ -36,7 +36,7 @@ def split_stock_data(stock_data, label_column, delete_column, test_size = 0.3,
     return X_train, X_test, y_train, y_test, feature_names
 
 label_column = 'LABEL'
-delete_column = ['LABEL', 'Next_5Day_Return']
+delete_column = ['LABEL', 'Next_5Day_Return'] # 記得依據實際情形調整天數
 accuracies = []
 
 # 分割資料
@@ -251,5 +251,6 @@ def HeatmapAndWeeklyCandlestick_darw(testX, feature_names):
 # =============================================================================
     
     plt.subplots_adjust(hspace = -0.3)  # 調整子圖之間的垂直間距
-    
+
+# 繪製圖形
 HeatmapAndWeeklyCandlestick_darw(testX, feature_names)
