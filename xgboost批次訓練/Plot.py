@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-def AccLineAndDataArea_Draw(batch_test_scores, latest_test_scores, TSSsplit, 
+def AccLineAndDataArea_Draw(title, batch_test_scores, latest_test_scores, TSSsplit, 
                             AllData_Len, n_splits):
     # 顯示每批準確度變化
     plt.rcParams['font.family'] = 'Microsoft JhengHei' # 設置中文字體
@@ -18,13 +18,13 @@ def AccLineAndDataArea_Draw(batch_test_scores, latest_test_scores, TSSsplit,
     plt.plot(range(1, len(batch_test_scores) + 1), batch_test_scores, 
              label = '批次測試集準確率', color = 'blue')
     plt.plot(range(1, len(batch_test_scores) + 1), latest_test_scores, 
-             label = '最新數據準確率', color = 'lime')
+             label = '最新數據測試準確率', color = 'lime')
     plt.xticks([i for i in range(1, len(batch_test_scores) + 1)], color = 'white')
     plt.xlabel("序位（批）", color = 'white')
     ytick = [i / 100 for i in range(0, 105, 10)]
     plt.yticks(ytick, [str(int(i * 100)) + ' %' for i in ytick], color = 'white')
     plt.ylabel("準確率", color = 'white')
-    plt.title("分批個別訓練 - 準確率", color = 'white') 
+    plt.title(title + ' - 準確率', color = 'white') 
     plt.grid(True, axis = 'y')
     plt.legend(loc = 'lower left', facecolor = 'black', labelcolor = 'w')
     
