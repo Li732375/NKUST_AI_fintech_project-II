@@ -72,7 +72,7 @@ import matplotlib.colors as mcolors
 import matplotlib.patches as patches
 
 
-def heatmap_darw(testX, feature_names):
+def HeatmapAndWeeklyCandlestick_darw(testX, feature_names):
     # 將 numpy.ndarray 接回成 DataFrame
     test_df = pd.DataFrame(testX, columns = feature_names)
     test_df['xor_result'] = xor_result
@@ -252,4 +252,4 @@ def heatmap_darw(testX, feature_names):
     
     plt.subplots_adjust(hspace = -0.3)  # 調整子圖之間的垂直間距
     
-heatmap_darw(testX, feature_names)
+HeatmapAndWeeklyCandlestick_darw(testX, feature_names)
