@@ -15,7 +15,7 @@ df = pd.read_excel("../data.xlsx")
 print(f"總資料數：{len(df)}")
 
 df_Latest = pd.read_excel("../data_Latest.xlsx")
-print(f"總資料數：{len(df_Latest)}")
+print(f"最新數據測試集總資料數：{len(df_Latest)}")
 
 feature_names = ['Gold_Close', 'Gold_High', 'CPIAUCNS', 'Gold_Open', 'UNRATE', 
                  'MA_20', 'MA_10', 'USD_Index_Growth_Rate', 'TW_CPI_Rate', 
@@ -116,14 +116,26 @@ print(f"資料彼此重疊率：{overlap_rate * 100:.2f} %")
 
 # 顯示每批準確度變化
 plt.rcParams['font.family'] = 'Microsoft JhengHei' # 設置中文字體
-plt.plot(range(1, len(batch_test_scores) + 1), batch_test_scores, marker = 'o', 
+
+# 設置背景顏色
+plt.gcf().patch.set_facecolor('black')  # 設置整個圖表背景為黑色
+plt.gca().set_facecolor('black')  # 設置坐標軸背景為黑色
+
+# =============================================================================
+# fig, ax = plt.subplots()
+# fig.patch.set_facecolor('black')  # 設置整個圖表背景為黑色
+# ax.set_facecolor('black')  # 設置坐標軸背景為黑色
+# =============================================================================
+
+plt.plot(range(1, len(batch_test_scores) + 1), batch_test_scores, 
          label = '批次測試集準確率', color = 'blue')
-plt.plot(range(1, len(batch_test_scores) + 1), latest_test_scores, marker = 'o', 
-         label = '最新數據準確率', color = 'red')
-plt.xticks([i for i in range(1, len(batch_test_scores) + 1)])
-plt.xlabel("序位（批）")
+plt.plot(range(1, len(batch_test_scores) + 1), latest_test_scores, 
+         label = '最新數據準確率', color = 'lime')
+plt.xticks([i for i in range(1, len(batch_test_scores) + 1)], color = 'white')
+plt.xlabel("序位（批）", color = 'white')
 ytick = [i / 100 for i in range(0, 105, 10)]
-plt.yticks(ytick, [str(int(i * 100)) + ' %' for i in ytick])
-plt.ylabel("準確率")
-plt.title("分批再訓練準確率")
-plt.legend(loc = 'lower left')
+plt.yticks(ytick, [str(int(i * 100)) + ' %' for i in ytick], color = 'white')
+plt.ylabel("準確率", color = 'white')
+plt.title("分批個別訓練 - 準確率", color = 'white') 
+plt.grid(True, axis = 'y')
+plt.legend(loc = 'lower left', facecolor = 'black', labelcolor = 'w')
