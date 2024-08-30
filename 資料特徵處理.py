@@ -122,7 +122,7 @@ df_merge['FEDFUNDS_Delta'] = df_merge['FEDFUNDS'].pct_change(periods = 21)
 
 
 # 因資料特定欄位計算有回朔需求而向前推進抓取時間，設定要排除的期間
-end_date = '2019-12-31'
+end_date = '2019-12-31' # 2019-12-31
 
 # 排除特定期間內的數據
 df_merge.set_index('DATE', inplace = True)
