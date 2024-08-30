@@ -16,11 +16,16 @@ print(f"總資料數：{len(df)}")
 df_Latest = pd.read_excel("../data_Latest.xlsx")
 print(f"最新數據測試集總資料數：{len(df_Latest)}")
 
-feature_names = ['Gold_Close', 'Gold_High', 'CPIAUCNS', 'Gold_Open', 'UNRATE', 
-                 'MA_20', 'MA_10', 'USD_Index_Growth_Rate', 'TW_CPI_Rate', 
-                 'WILLR', 'Open', 'K', 'RSI_14', 'Gold_Volume', 
-                 'Gold_Growth_Rate', 'FEDFUNDS', 'Bollinger Bands lower', 
-                 'Bollinger Bands Upper', 'USA_GDP_Rate']
+# =============================================================================
+# feature_names = ['Gold_Close', 'Gold_High', 'CPIAUCNS', 'Gold_Open', 'UNRATE', 
+#                  'MA_20', 'MA_10', 'USD_Index_Growth_Rate', 'TW_CPI_Rate', 
+#                  'WILLR', 'Open', 'K', 'RSI_14', 'Gold_Volume', 
+#                  'Gold_Growth_Rate', 'FEDFUNDS', 'Bollinger Bands lower', 
+#                  'Bollinger Bands Upper', 'USA_GDP_Rate']
+# =============================================================================
+
+feature_names = ['CPI_Delta', 'UNRATE', 'Gold_High', 'FEDFUNDS', 'USA_CPI_Rate', 'WILLR', 'USD_Index_Growth_Rate', 'WMA', 'Close', 'Gold_Volume', 'MACD', 'Low', 'LINEARREG_ANGLE', 'CCI', 'TW_CPI_Rate']
+
 
 X = df[feature_names].values
 y = df['LABEL'].values
@@ -29,7 +34,7 @@ X_Latest = df_Latest[feature_names].values
 y_Latest = df_Latest['LABEL'].values
 
 
-n_splits = 24 # 設定分割數量
+n_splits = 10 # 設定分割數量
 
 # 初始化 TimeSeriesSplit
 TSS = TimeSeriesSplit(n_splits = n_splits)

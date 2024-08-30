@@ -11,11 +11,15 @@ df = pd.read_excel('../data.xlsx')
 df_Latest = pd.read_excel("../data_Latest.xlsx")
 
 #print(df.columns)
-feature_names = ['Gold_Close', 'Gold_High', 'CPIAUCNS', 'Gold_Open', 'UNRATE', 
-                 'MA_20', 'MA_10', 'USD_Index_Growth_Rate', 'TW_CPI_Rate', 
-                 'WILLR', 'Open', 'K', 'RSI_14', 'Gold_Volume', 
-                 'Gold_Growth_Rate', 'FEDFUNDS', 'Bollinger Bands lower', 
-                 'Bollinger Bands Upper', 'USA_GDP_Rate']
+# =============================================================================
+# feature_names = ['Gold_Close', 'Gold_High', 'CPIAUCNS', 'Gold_Open', 'UNRATE', 
+#                  'MA_20', 'MA_10', 'USD_Index_Growth_Rate', 'TW_CPI_Rate', 
+#                  'WILLR', 'Open', 'K', 'RSI_14', 'Gold_Volume', 
+#                  'Gold_Growth_Rate', 'FEDFUNDS', 'Bollinger Bands lower', 
+#                  'Bollinger Bands Upper', 'USA_GDP_Rate']
+# =============================================================================
+
+feature_names = ['CPI_Delta', 'UNRATE', 'Gold_High', 'FEDFUNDS', 'USA_CPI_Rate', 'WILLR', 'USD_Index_Growth_Rate', 'WMA', 'Close', 'Gold_Volume', 'MACD', 'Low', 'LINEARREG_ANGLE', 'CCI', 'TW_CPI_Rate']
 # 0.821
     
 def split_stock_data(stock_data, label_column, test_size = 0.3, 
