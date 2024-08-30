@@ -59,7 +59,7 @@ def AccLineAndDataArea_Draw(title, batch_test_scores, latest_test_scores, TSSspl
     plt.xlabel("資料索引", color = 'white', fontsize = 11)
     plt.ylim(1, n_splits + 1)
     plt.yticks(range(0, n_splits + 1, 5), [''] + [str(i) for i in range(5, n_splits + 1, 5)], 
-               color = 'white')
+               color = 'white', fontsize = 8)
     plt.ylabel("批次", color = 'white', fontsize = 11)
     plt.title("批次區間", color = 'white', fontsize = 14)
     plt.legend(loc = 'lower right', facecolor = 'black', fontsize = 11, 
