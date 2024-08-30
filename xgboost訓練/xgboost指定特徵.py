@@ -124,7 +124,7 @@ def darw(result):
         spine.set_linewidth(1)
     
     # 設置刻度字體大小
-    plt.xticks([0, 4] + [i for i in range(9, len(result) // 5, 5)] + \
+    plt.xticks([0] + [i for i in range(4, len(result) // 5, 5)] + \
                [len(result) // 5] if len(result) % 5 != 0 else [], 
                [1 if i == 0 else i for i in range(0, len(result) // 5, 5)] + \
                    [len(result) // 5 + 1] if len(result) % 5 != 0 else [], 
