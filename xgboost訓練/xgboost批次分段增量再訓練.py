@@ -51,12 +51,12 @@ for i, (train_index, test_index) in enumerate(TSS.split(X, y)):
     test_len = len(sub_test_index)
     all_len = train_len + test_len
     
-    print('--------------')
-    print(f"第 {i+1} 份")
-    print(f"子訓練集資料數：{train_len}")
-    print(f"子測試集資料數：{test_len} (佔批次 {test_len / all_len * 100:.1f} %)")
-    print(f"子訓練集索引（頭尾 5 個）：{sub_train_index.index.tolist()[:5]}...{sub_train_index.index.tolist()[-5:]}")
-    print(f"子測試集索引（頭尾 5 個）：{sub_test_index.index.tolist()[:5]}...{sub_test_index.index.tolist()[-5:]}")
+    # print('--------------')
+    # print(f"第 {i+1} 份")
+    # print(f"子訓練集資料數：{train_len}")
+    # print(f"子測試集資料數：{test_len} (佔批次 {test_len / all_len * 100:.1f} %)")
+    # print(f"子訓練集索引（頭尾 5 個）：{sub_train_index.index.tolist()[:5]}...{sub_train_index.index.tolist()[-5:]}")
+    # print(f"子測試集索引（頭尾 5 個）：{sub_test_index.index.tolist()[:5]}...{sub_test_index.index.tolist()[-5:]}")
     
     # 提取訓練集和測試集
     sub_trainX, sub_testX = X[train_index], X[test_index]
