@@ -105,7 +105,8 @@ GOLD_data = GOLD_data.rename(columns = {'Date': 'DATE', 'Open': 'Gold_Open',
                                         'Low': 'Gold_Low', 
                                         'Close': 'Gold_Close',
                                         'Adj Close': 'Gold_Adj_Close',
-                                        'Volume': 'Gold_Volume'}) # 黃金改大寫
+                                        'Volume': 'Gold_Volume',
+                                        'Growth Rate': 'Gold_Growth_Rate'}) # 黃金改大寫
 df_merge = pd.merge_asof(df_merge.sort_values('DATE'), 
                          GOLD_data.sort_values('DATE'), on = 'DATE') # 合併資料
 
@@ -153,7 +154,25 @@ def function(num): # 預測日數
             classify_return) # 創造新的一列 LABEL 來記錄漲跌
     
     
-test_list = [0]
+feature_names = ['Gold_Close', 'Gold_High', 'CPIAUCNS', 'Gold_Open', 'UNRATE', 
+                 'MA_20', 'MA_10', 'USD_Index_Growth_Rate', 'TW_CPI_Rate', 
+                 'WILLR', 'Open', 'K', 'RSI_14', 'Gold_Volume', 
+                 'Gold_Growth_Rate', 'FEDFUNDS', 'Bollinger Bands lower', 
+                 'Bollinger Bands Upper', 'USA_GDP_Rate']
+
+def split_stock_data(stock_data, label_column, 
+                     test_size = 0.3, random_state = 42):
+    X = stock_data[feature_names].values
+    y = stock_data[label_column].values
+    
+    X_train, X_test, y_train, y_test = \
+        train_test_split(X, y, test_size = test_size, 
+                         random_state = random_state)
+
+    return X_train, X_test, y_train, y_test, feature_names
+
+
+test_list = []
     
 for i in range(60):
     function(i + 1)
@@ -178,29 +197,8 @@ for i in range(60):
 
 
     # 讀取數據
-    df = pd.read_excel('data.xlsx')
-
-    #print(df.columns)
-    feature_names = ['Gold_Close', 'Gold_High', 'CPIAUCNS', 'Gold_Open', 'UNRATE', 
-                     'MA_20', 'MA_10', 'USD_Index_Growth_Rate', 'TW_CPI_Rate', 
-                     'WILLR', 'Open', 'K', 'RSI_14', 'Gold_Volume', 
-                     'Gold_Growth_Rate', 'FEDFUNDS', 'Bollinger Bands lower', 
-                     'Bollinger Bands Upper', 'USA_GDP_Rate']
-    # 0.821
-        
-    def split_stock_data(stock_data, label_column, 
-                         test_size = 0.3, random_state = 42):
-        X = stock_data[feature_names].values
-        y = stock_data[label_column].values
-        
-        X_train, X_test, y_train, y_test = \
-            train_test_split(X, y, test_size = test_size, 
-                             random_state = random_state)
-
-        return X_train, X_test, y_train, y_test, feature_names
-
+    df = pd.read_excel('data.xlsx') 
     label_column = 'LABEL'
-    accuracies = []
 
     # 分割資料
     trainX, testX, trainY, testY, feature_names = \
@@ -218,6 +216,7 @@ for i in range(60):
     # 0.821
     
     test_list.append(test_acc)
+    
     
 import matplotlib.pyplot as plt
 
@@ -272,6 +271,6 @@ plt.xlabel('日數', fontsize = 15)
 plt.ylabel('準確率', fontsize = 15)
 plt.grid(axis = 'y')
 plt.legend(['準確率'], loc = 'upper left', fontsize = 15)
-    
+
 
 
