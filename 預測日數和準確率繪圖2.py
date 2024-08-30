@@ -189,7 +189,7 @@ test_list = []
 latest_test_scores = []
 
     
-for i in range(240):
+for i in range(100):
     function(i + 1)
     
     # 移除過去新增的欄位
@@ -232,7 +232,7 @@ for i in range(240):
     test_acc = Xgboost.score(testX, testY)
 
     print(f'Xgboost({i + 1}) 測試集準確率 %.3f' % test_acc)
-    print(f"訓練時間: {training_time // 60:.2f} 分 {training_time % 60:.2f} 秒")
+    # print(f"訓練時間: {training_time // 60:.2f} 分 {training_time % 60:.2f} 秒")
     # 0.821
     
     test_list.append(test_acc)
@@ -267,6 +267,9 @@ plt.plot(range(1, len(test_list) + 1), test_list,
          label = '測試集準確率', color = 'blue')
 plt.plot(range(1, len(test_list) + 1), latest_test_scores,
          label = '預測年初至近期準確率', color = 'lime')
+plt.plot(range(1, len(test_list) + 1), 
+         [i / len(df_L)for i in range(1, len(test_list) + 1)],
+         label = '無效資料占比', color = 'r')
 # =============================================================================
 # plt.xticks([1, 5] + [i for i in range(10, len(test_list), 5)] + \
 #            [len(test_list)], 
@@ -274,13 +277,14 @@ plt.plot(range(1, len(test_list) + 1), latest_test_scores,
 #                [len(test_list)],
 #            color = 'white')
 # =============================================================================
+plt.xticks(color = 'white')
 plt.xlabel("批次順序", color = 'white')
 ytick = [i / 100 for i in range(0, 105, 10)]
 plt.yticks(ytick, [str(int(i * 100)) + ' %' for i in ytick], color = 'white')
 plt.ylabel("準確率", color = 'white')
 plt.title('預測日數準確率變化', color = 'white', fontsize = 14) 
 plt.grid(True)
-plt.legend(loc = 'lower left', facecolor = 'black', labelcolor = 'w', 
+plt.legend(loc = 'lower right', facecolor = 'black', labelcolor = 'w', 
            fontsize = 10)    
 
 
