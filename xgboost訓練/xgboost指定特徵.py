@@ -155,7 +155,7 @@ def darw(result):
     
     # 添加圖例
     plt.legend(handles = legend_elements, loc = 'upper left',
-               ncol = 3, bbox_to_anchor = (-0.01, 1.3), 
+               ncol = 3, bbox_to_anchor = (-0.01, 1.7), 
                facecolor = 'black', labelcolor = 'w')
 # =============================================================================
 #     loc：圖例於圖表中的位置
