@@ -173,6 +173,7 @@ feature_names = ['Gold_Close', 'Gold_High', 'CPIAUCNS', 'Gold_Open', 'UNRATE',
                  'Gold_Growth_Rate', 'FEDFUNDS', 'Bollinger Bands lower', 
                  'Bollinger Bands Upper', 'USA_GDP_Rate']
 
+
 def split_stock_data(stock_data, label_column, 
                      test_size = 0.3, random_state = 42):
     X = stock_data[feature_names].values
