@@ -59,7 +59,7 @@ test_acc = Xgboost.score(np.delete(testX, new_trainX,
                                         axis = 1), testY)
 
 # 近期數據測試
-X_Latest = df_Latest[feature_names].drop('Index').values
+X_Latest = df_Latest[feature_names[:-1]].values # 原始資料裡並沒有 'Index' 這欄，故需要再次特別指定
 y_Latest = df_Latest['LABEL'].values
 
 latest_data_test_acc = Xgboost.score(X_Latest, y_Latest)
@@ -130,6 +130,7 @@ def HeatmapAndWeeklyCandlestick_darw(testX, feature_names):
                                        row['Open'] else 'r', axis = 1)
 
     # 繪製 K 線圖
+    plt.rcParams['font.family'] = 'Microsoft JhengHei' # 設置中文字體
     plt.figure(figsize = (12, 6), facecolor = 'black')
     plt.subplot(2, 1, 1).set_facecolor('black') # 設該子圖背景為黑色
     # =========================================================================
@@ -166,7 +167,7 @@ def HeatmapAndWeeklyCandlestick_darw(testX, feature_names):
                                   label = label) for colors, 
                        label in zip(colors, legend_labels)]
     plt.legend(handles = legend_elements, loc = 'upper left',
-               ncol = 2, bbox_to_anchor = (-0.01, 1.13), 
+               ncol = 2, bbox_to_anchor = (-0.01, 1.2), 
                facecolor = 'black', labelcolor = 'w')
     
 # =============================================================================
@@ -182,7 +183,6 @@ def HeatmapAndWeeklyCandlestick_darw(testX, feature_names):
     # 重塑為每列 5 筆數據的二維矩陣
     result_2d = data_padded.reshape(num_rows, num_columns).T  # 轉置以符合每列顯示的要求
     
-    plt.rcParams['font.family'] = 'Microsoft JhengHei' # 設置中文字體
     plt.subplot(2, 1, 2)
     # =========================================================================
     # plt.subplot(nrows, ncols, index)
@@ -255,7 +255,7 @@ def HeatmapAndWeeklyCandlestick_darw(testX, feature_names):
     
     # 添加圖例
     plt.legend(handles = legend_elements, loc = 'lower left',
-               ncol = 3, bbox_to_anchor = (-0.005, -0.9), 
+               ncol = 3, bbox_to_anchor = (-0.005, -0.45), 
                facecolor = 'black', labelcolor = 'w')
 # =============================================================================
 #     loc：圖例於圖表中的位置
@@ -265,7 +265,7 @@ def HeatmapAndWeeklyCandlestick_darw(testX, feature_names):
 #     labelcolor：圖例統一文字顏色
 # =============================================================================
     
-    plt.subplots_adjust(hspace = -0.3)  # 調整子圖之間的垂直間距
+    plt.subplots_adjust(hspace = -0.1)  # 調整子圖之間的垂直間距
 
 # 繪製圖形
 HeatmapAndWeeklyCandlestick_darw(testX, feature_names)
