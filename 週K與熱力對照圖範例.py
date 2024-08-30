@@ -210,7 +210,8 @@ def HeatmapAndWeeklyCandlestick_darw(testX, feature_names):
     
     for i in range(num_rows):
         for j in range(num_columns):
-            rect = patches.Rectangle((j - 0.5, i - 0.55), 1, 1, linewidth = 1, 
+            rect = patches.Rectangle((j - 0.5, i - 0.55), 1, 1, 
+                                     linewidth = 0.5, 
                                      edgecolor = '#636363', 
                                      facecolor = 'none')
             ax.add_patch(rect)
@@ -221,8 +222,10 @@ def HeatmapAndWeeklyCandlestick_darw(testX, feature_names):
         spine.set_linewidth(1)
     
     # 設定刻度
-    plt.xticks([0, 4] + [i for i in range(9, len(KLine_df), 5)], 
-               [1 if i == 0 else i for i in range(0, len(KLine_df), 5)], 
+    plt.xticks([0, 4] + [i for i in range(9, len(KLine_df), 5)] + \
+               [len(result) // 5] if len(result) % 5 != 0 else [], 
+               [1 if i == 0 else i for i in range(0, len(KLine_df), 5)] + \
+                   [len(result) // 5 + 1] if len(result) % 5 != 0 else [], 
                fontsize = 10, color = 'white')
     plt.yticks(range(5), ['1st', '2nd', '3rd', '4th', '5th'], 
                fontsize = 9, color = 'white', ha = 'left')
@@ -255,7 +258,7 @@ def HeatmapAndWeeklyCandlestick_darw(testX, feature_names):
     
     # 添加圖例
     plt.legend(handles = legend_elements, loc = 'lower left',
-               ncol = 3, bbox_to_anchor = (-0.005, -0.45), 
+               ncol = 3, bbox_to_anchor = (-0.005, -1), 
                facecolor = 'black', labelcolor = 'w')
 # =============================================================================
 #     loc：圖例於圖表中的位置
