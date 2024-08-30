@@ -270,18 +270,15 @@ plt.plot(range(1, len(test_list) + 1), latest_test_scores,
 plt.plot(range(1, len(test_list) + 1), 
          [i / len(df_L)for i in range(1, len(test_list) + 1)],
          label = '無效資料占比', color = 'r')
-# =============================================================================
-# plt.xticks([1, 5] + [i for i in range(10, len(test_list), 5)] + \
-#            [len(test_list)], 
-#            ['1'] + [str(i) for i in range(5, len(test_list), 5)] + \
-#                [len(test_list)],
-#            color = 'white')
-# =============================================================================
-plt.xticks(color = 'white')
-plt.xlabel("批次順序", color = 'white')
+plt.xticks([1, 5] + [i for i in range(10, len(test_list), 5)] + \
+           [len(test_list)], 
+           ['1'] + [str(i) for i in range(5, len(test_list), 5)] + \
+               [len(test_list)],
+           color = 'white')
+plt.xlabel("預測日數", color = 'white', fontsize = 11)
 ytick = [i / 100 for i in range(0, 105, 10)]
 plt.yticks(ytick, [str(int(i * 100)) + ' %' for i in ytick], color = 'white')
-plt.ylabel("準確率", color = 'white')
+plt.ylabel("準確率", color = 'white', fontsize = 11)
 plt.title('預測日數準確率變化', color = 'white', fontsize = 14) 
 plt.grid(True)
 plt.legend(loc = 'lower right', facecolor = 'black', labelcolor = 'w', 
