@@ -270,7 +270,7 @@ plt.title(f'預測日數準確度折線圖 【訓練資料期間 {str(df_merge.i
 plt.xlabel('日數', fontsize = 15)
 plt.ylabel('測試集準確率', fontsize = 15)
 plt.grid(axis = 'y')
-plt.legend(['準確率'], loc = 'upper left', fontsize = 15)
+plt.legend(['測試集準確率'], loc = 'upper left', fontsize = 15)
 
 
 
