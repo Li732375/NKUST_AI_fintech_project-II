@@ -127,7 +127,6 @@ end_date = '2019-12-31' # 2019-12-31
 # 排除特定期間內的數據
 df_merge.set_index('DATE', inplace = True)
 df_merge.drop(df_merge.loc[:end_date].index, inplace = True)
-print(df_merge.head())
 
 # 計算差距欄位 (欄位之間)
 df_merge['CPI_Delta'] = df_merge['CPIAUCNS'] - df_merge['TW_CPI'] # 兩國 CPI 差距
@@ -138,7 +137,7 @@ df_merge = df_merge.drop(columns = ['Volume', 'BOP', 'CDL3BLACKCROWS',
 
 
 # 處理 y 資料
-pre_day = 5
+pre_day = 2
 df_merge[f'Next_{pre_day}Day_Return'] = \
     df_merge['Close'].diff(pre_day).shift(-pre_day) # 計算價格變化
 # =============================================================================
@@ -156,6 +155,7 @@ df_merge['LABEL'] = \
 print(df_merge.head())
 print(df_merge.tail())
 df_merge.to_excel("data.xlsx") # 將整理好的資料存成 excel
+print(f"訓練資料期間 【{str(df_merge.index[0])[:10]} - {str(df_merge.index[len(df_merge) - 1])[:10]}】")
 print("已將結果寫入檔案 data.xlsx")
 
 ones_count = (df_merge['LABEL'] == 1).sum()
