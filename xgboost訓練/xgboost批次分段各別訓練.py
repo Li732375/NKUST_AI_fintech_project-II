@@ -33,7 +33,7 @@ X_Latest = df_Latest[feature_names].values
 y_Latest = df_Latest['LABEL'].values
 
 
-n_splits = 10 # 設定分割數量
+n_splits = 9 # 設定分割數量
 overlap_rate = 3 * 0.1 + 1 # 設定每批訓練集之間的，最低重疊率
 max_train_size = math.ceil(len(df) // n_splits * overlap_rate) if \
     len(df) % n_splits == 0 else math.ceil(len(df) / n_splits * overlap_rate) # 計算最大訓練集大小

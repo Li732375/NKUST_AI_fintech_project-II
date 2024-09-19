@@ -34,7 +34,7 @@ X_Latest = df_Latest[feature_names].values
 y_Latest = df_Latest['LABEL'].values
 
 
-n_splits = 10 # 設定分割數量
+n_splits = 9 # 設定分割數量
 
 # 初始化 TimeSeriesSplit
 TSS = TimeSeriesSplit(n_splits = n_splits)
