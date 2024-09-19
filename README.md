@@ -21,8 +21,10 @@ CUDA Version        : 12.6
 
 ## 大綱
 #### [前置準備](#前置準備-1)
-#### [資料下載與預處理](#資料下載與預處理-1)
-#### [訓練模型](訓練模型-1)
+#### [數據選用](#數據選用-1)
+#### [資料下載](#資料下載-1)
+#### [資料預處理](#資料預處理-1)
+#### [訓練模型成果](#訓練模型成果-1)
 #### [結語](#結語-1)
 ***
 
@@ -115,7 +117,7 @@ CUDA Version        : 12.6
 
 ***
 
-## 資料下載與預處理
+## 資料下載
 
 * #### 取得歷史數據
 
@@ -177,10 +179,13 @@ CUDA Version        : 12.6
   plt.title("USD -> TWD") # 圖標題
   plt.show()
   ```
+  ![歷史貨幣走勢](./Ori_Data/Figure 2024-09-19 162512.png)
+  > 讀者執行的時間不同，與此略有差異是正常的（至少同時段的區間會相同）。繪製其他數據時，別忘記要更新資料物件、兩軸名稱、標題名稱
+  
 * #### 網址數據
 
   以台灣 **消費者物價指數及其年增率** 為例，須參考網址數據的副檔名（**.xls**），找到相應套件的讀取。並且尋找目標欄位，也要進行時間換算，或甚至是自行產生新欄位（即接下來的預處理階段）。
-  > 一般來說，在目標網站的數據下載頁面，將游標移至下載按鈕上（不點擊），浮出的網址即是目標下載網址（或者是右鍵複製網址）。但也有部分網站對此做出保護，拒絕提供下載網址複製哦！
+  > 一般來說，在目標網站的數據下載頁面，將游標移至下載按鈕上（不點擊），浮出的網址即是目標下載網址（或者是右鍵複製網址）。但也有部分網站對此做出保護，拒絕提供下載網址複製！
   ```
   # 消費者物價指數及其年增率 網址
   url = 'https://ws.dgbas.gov.tw/001/Upload/463/relfile/10315/2414/cpispl.xls'
@@ -215,10 +220,178 @@ CUDA Version        : 12.6
   print(TW_cpi.head())
   ```
   如此逐項下載並繪圖預覽～
-  > 在檔案 "資料下載2.py" 裡，也是用同樣方式取得最新近期資料。
+  > 在檔案 "**資料下載2.py**" 裡，也是用同樣方式取得最新近期資料（2024-01-01 ~ 至今）。
 ***
 
+## 資料預處理
+
+接著，在 "**資料特徵處理.py**" ，進行資料的：
+1. 讀入
+2. 新增技術指標
+3. 合併多項不同數據來源成為訓練資料
+4. 新增輸出欄位（訓練資料答案）
+5. 儲存訓練資料
+
+* #### 讀入數據
+  從歷史貨幣數據開始，讀入 excel (.xlsx)，並且分配欄位予四個變數，供下一節使用。
+  > 這裡讀入的資訊，會在最後一節重新寫入新的 excel (.xlsx)。
+  ```
+  import pandas as pd
+  import talib
+
+
+  DataFolder = 'Ori_Data/'
+  Currency_data = pd.read_excel(DataFolder + 'USDtoTWD_Currency_Data.xlsx', 
+                              index_col = 'Date')  # 讀取匯率資料
+  Currency_data.drop(columns = ['Adj Close'], inplace = True)
+  df_open = Currency_data['Open']
+  df_close = Currency_data['Close']
+  df_high = Currency_data['High']
+  df_low = Currency_data['Low']
+  ```
+
+  同樣在後續的合併章節時才逐一讀入的檔案
+  ```
+  # 讀入其他資料進行合併
+  Fed_Funds_Rate = pd.read_excel(DataFolder + 'Fed_Funds_Rate.xlsx')  
+  USA_CPI = pd.read_excel(DataFolder + 'USA_CPI_Data.xlsx')  
+  USA_Unemployment_Rate = pd.read_excel(DataFolder + 'USA_Unemployment_Rate.xlsx')  
+  TW_CPI = pd.read_excel(DataFolder + 'TW_CPI.xlsx')
+  USA_GDP = pd.read_excel(DataFolder + 'USA_GDP.xlsx')
+  TW_Rate = pd.read_excel(DataFolder + 'TW_Rate.xlsx')
+  DXY_NYB = pd.read_excel(DataFolder + 'Dx-y_Data.xlsx')
+  GOLD_data = pd.read_excel(DataFolder + 'Gold_Data.xlsx')
+  ```
+  
+
+* #### 選用與新增技術指標
+  指標選用的部分，其實仰賴相對熟悉該領域的老手或者網路教學資料了，作者查詢後，似乎概念和股票相仿（匯率數據不提供交易量）。參數部分大部分仰賴預設值。
+  
+  採納以下指標：
+  1. MA (5、10、20)
+  2. RSI (14)
+  3. MACD
+  4. KD
+  5. Bollinger Bands
+  6. CCI
+  7. MOM
+  8. BOP
+  9. WILLR
+  10. SAR
+  11. AVGPRICE
+  12. WCLPRICE
+  13. LINEARREG_ANGLE
+  14. WMA
+  15. STDDEV
+  16. CDL3BLACKCROWS
+  
+  ```
+  # 處理 x 資料
+  Currency_data['MA_5'] = talib.SMA(df_close, 5) # 計算 MA5
+  Currency_data['MA_10'] = talib.SMA(df_close, 10) # 計算 MA10
+  Currency_data['MA_20'] = talib.SMA(df_close, 20) # 計算 MA20
+  Currency_data['RSI_14'] = talib.RSI(df_close, 14) # 計算 RSI
+  macd, macdsignal, macdhist = talib.MACD(df_close, fastperiod = 12, 
+                                        slowperiod = 26, 
+                                        signalperiod = 9) # 計算 MACD
+  Currency_data['MACD'] = macd # 將 MACD 計算結果存回資料中
+  Currency_data['K'],  Currency_data['D'] = \
+    talib.STOCH(df_high, df_low, df_close, fastk_period = 14, 
+                slowk_period = 14, slowd_period = 3) # 計算 KD
+
+  upperband, middleband, lowerband = talib.BBANDS(df_close, 
+                                          timeperiod = 5, 
+                                          nbdevup = 2, nbdevdn = 2, 
+                                          matype = 0)
+  Currency_data['Bollinger Bands Upper'] = upperband
+  Currency_data['Bollinger Bands Middle'] = middleband
+  Currency_data['Bollinger Bands lower'] = lowerband
+  Currency_data['CCI'] = talib.CCI(df_high, df_low, df_close, timeperiod = 14)
+  Currency_data['MOM'] = talib.MOM(df_close, timeperiod = 10)
+  Currency_data['BOP'] = talib.BOP(df_open, df_high, df_low, df_close)
+  Currency_data['WILLR'] = talib.WILLR(df_high, df_low, df_close, 
+                                     timeperiod = 14)
+  Currency_data['SAR'] = talib.SAR(df_high, df_low)
+  Currency_data['AVGPRICE'] = talib.AVGPRICE(df_open, df_high, df_low, df_close)
+  Currency_data['WCLPRICE'] = talib.WCLPRICE(df_high, df_low, df_close)
+  Currency_data['LINEARREG_ANGLE'] = talib.LINEARREG_ANGLE(df_close, 14)
+  Currency_data['WMA'] = talib.WMA(df_close,30) # 計算 MA5
+  Currency_data['STDDEV'] = talib.STDDEV (df_close, timeperiod=5, nbdev=1)
+  Currency_data['CDL3BLACKCROWS'] = talib.CDL3BLACKCROWS (df_open, df_high, 
+                                                        df_low, df_close)
+
+  ```
+  
+* #### 合併資料
+  接著仿資料庫形式，逐一合併其他調整後的數據。
+
+  > merge_asof，用於合併兩個數據框（DataFrame） ，其中一個 DataFrame 的時間戳（或排序列）可能在另一個 DataFrame 中找不到完全對應的記錄。這時，可以根據時間戳的前向或後向對齊進行合併。
+  ```
+  df_merge = pd.merge_asof(Fed_Funds_Rate.sort_values('DATE'), 
+                         USA_CPI.sort_values('DATE'), on = 'DATE') # 合併資料
+  df_merge = pd.merge_asof(df_merge.sort_values('DATE'), 
+                         USA_Unemployment_Rate.sort_values('DATE'), 
+                         on = 'DATE') # 合併資料
+  ```
+  > 部分數據則需要先行調整欄位名稱才可以對應
+  ```
+  TW_CPI = TW_CPI.rename(columns = {'CPI': 'TW_CPI'}) # 欄位名稱調整
+  df_merge = pd.merge_asof(df_merge.sort_values('DATE'), 
+                         TW_CPI.sort_values('DATE'), on = 'DATE') # 合併資料
+
+  USA_GDP = USA_GDP.rename(columns = {'GDP': 'US_GDP'}) # 欄位名稱調整
+  df_merge = pd.merge_asof(df_merge.sort_values('DATE'), 
+                         USA_GDP.sort_values('DATE'), on = 'DATE') # 合併資料
+
+  df_merge = pd.merge_asof(df_merge.sort_values('DATE'), 
+                         TW_Rate.sort_values('DATE'), on = 'DATE') # 合併資料
+
+
+  DXY_NYB = DXY_NYB.rename(columns = {'Date': 'DATE', 'Close': 'USD_Index', 
+                                    'Growth Rate': 'USD_Index_Growth_Rate'}) # 美元指數小寫改大寫
+  df_merge = pd.merge_asof(df_merge.sort_values('DATE'), 
+                         DXY_NYB.sort_values('DATE'), on = 'DATE') # 合併資料
+
+  GOLD_data = GOLD_data.rename(columns = {'Date': 'DATE', 'Open': 'Gold_Open', 
+                                        'High': 'Gold_High', 
+                                        'Low': 'Gold_Low', 
+                                        'Close': 'Gold_Close',
+                                        'Adj Close': 'Gold_Adj_Close',
+                                        'Volume': 'Gold_Volume',
+                                        'Growth Rate': 'Gold_Growth_Rate'}) # 黃金改大寫
+  df_merge = pd.merge_asof(df_merge.sort_values('DATE'), 
+                         GOLD_data.sort_values('DATE'), on = 'DATE') # 合併資料
+
+  Currency_data = Currency_data.reset_index()
+  Currency_data = Currency_data.rename(columns = {'Date': 'DATE'})
+  df_merge = pd.merge_asof(Currency_data.sort_values('DATE'), 
+                         df_merge.sort_values('DATE'), on = 'DATE') # 合併資料
+  ```
+  
+* #### 新增輸出欄位
+  
+  
+  ```
+  ```
+  
+* #### 儲存訓練資料
+  
+  
+  ```
+  ```
+  如此一來，完成訓練模型的資料啦～
+  > 在檔案 "**資料特徵處理2.py**" 裡，也是用同樣方式預處理近期資料（2024-01-01 ~ 至今）。
+
+***
+  
 ## 訓練模型成果
+  
+* #### 訓練模型
+採用 XGBoost 訓練模型
+  ```
+  ```
+
+* #### 訓練模型方式
 
 
 ***
