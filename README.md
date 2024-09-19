@@ -179,7 +179,7 @@ CUDA Version        : 12.6
   plt.title("USD -> TWD") # 圖標題
   plt.show()
   ```
-  [歷史貨幣走勢](./Ori_Data/Figure 2024-09-19 162512.png)
+  [歷史貨幣走勢](./Ori_Data/Currency_Data.png)
   > 讀者執行的時間不同，與此略有差異是正常的（至少同時段的區間會相同）。繪製其他數據時，別忘記要更新資料物件、兩軸名稱、標題名稱
   
 * #### 網址數據
