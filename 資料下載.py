@@ -4,8 +4,6 @@ import pandas as pd
 
 Data_Time_Start = '2003-01-01' # 應後續特徵處理時避免缺值，必須再提前目標一年
 Data_Time_End = '2023-12-31'
-Data_Time_TW_Start = str(int(Data_Time_Start[0 : 4]) - 1911) + '-01-01'
-Data_Time_TW_End = str(int(Data_Time_End[0 : 4]) - 1911) + '-12-31'
 DataFolder = 'Ori_Data/'
 
 
