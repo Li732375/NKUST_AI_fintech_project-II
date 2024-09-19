@@ -267,7 +267,7 @@ plt.annotate(f'{all_acc.iloc[1:].idxmin()}日 ({all_acc.iloc[1:].min() * 100:.1f
 
 plt.title(f'預測日數準確度折線圖 【訓練資料期間 {str(df_merge.index[0])[:10]} - {str(df_merge.index[len(df_merge) - 1])[:10]}】', 
           fontsize = 18)
-plt.xlabel('日數', fontsize = 15)
+plt.xlabel('預測日數', fontsize = 15)
 plt.ylabel('測試集準確率', fontsize = 15)
 plt.grid(axis = 'y')
 plt.legend(['測試集準確率'], loc = 'upper left', fontsize = 15)
