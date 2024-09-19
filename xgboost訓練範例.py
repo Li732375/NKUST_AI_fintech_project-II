@@ -21,7 +21,7 @@ def split_stock_data(stock_data, label_column, delete_column, test_size = 0.3,
 
 label_column = 'LABEL' # 標籤欄位
 # 刪除的欄位，欄位 'Next_?Day_Return' 中，? 應視特徵處理檔案參數 pre_day 調整
-delete_column = ['LABEL', 'Next_5Day_Return']
+delete_column = ['LABEL', 'Next_2Day_Return']
 
 # 切分資料為訓練與測試集
 trainX, testX, trainY, testY, feature_names = split_stock_data(df, label_column, 
@@ -51,9 +51,14 @@ sorted_pairs = sorted(feature_importance_pairs, key = lambda x: x[1],
                       reverse = True)
 
 # 提取排序後的特徵
-sorted_feature_names, sorted_importances = zip(*sorted_pairs[:]) # [:數字] 取得前幾名的特徵和重要性
+sorted_feature_names, sorted_importances = zip(*sorted_pairs[:15]) # [:數字] 取得前幾名的特徵和重要性
 print("依特徵重要性排序")
 print(sorted_feature_names)
+print()
+
+for i, j in zip(sorted_feature_names, sorted_importances):
+    print(f"{i} ({j * 100:.2f} %)")
+print()
 
 # 繪製特徵重要性橫條圖
 plt.rcParams['font.family'] = 'Microsoft JhengHei' # 設置中文字體
