@@ -229,8 +229,9 @@ CUDA Version        : 12.6
 1. 讀入
 2. 新增技術指標
 3. 合併多項不同數據來源成為訓練資料
-4. 新增輸出欄位（訓練資料答案）
-5. 儲存訓練資料
+4. 指定資料時段
+5. 新增輸出欄位（訓練資料答案）
+6. 儲存訓練資料
 
 * #### 讀入數據
   從歷史貨幣數據開始，讀入 excel (.xlsx)，並且分配欄位予四個變數，供下一節使用。
@@ -265,11 +266,12 @@ CUDA Version        : 12.6
   
 
 * #### 選用與新增技術指標
-  指標選用的部分，其實仰賴相對熟悉該領域的老手或者網路教學資料了，作者查詢後，似乎概念和股票相仿（匯率數據不提供交易量）。參數部分大部分仰賴預設值。
+  指標選用的部分，其實仰賴相對熟悉該領域的老手或者網路教學資料了，作者查詢後，似乎概念和股票相仿。參數部分幾乎仰賴預設值。
+  > 匯率數據不提供交易量
   
   採納以下指標：
-  1. MA (5、10、20)
-  2. RSI (14)
+  1. MA (5、10、20 日)
+  2. RSI (14 日)
   3. MACD
   4. KD
   5. Bollinger Bands
@@ -333,6 +335,7 @@ CUDA Version        : 12.6
                          USA_Unemployment_Rate.sort_values('DATE'), 
                          on = 'DATE') # 合併資料
   ```
+
   > 部分數據則需要先行調整欄位名稱才可以對應
   ```
   TW_CPI = TW_CPI.rename(columns = {'CPI': 'TW_CPI'}) # 欄位名稱調整
@@ -367,11 +370,38 @@ CUDA Version        : 12.6
   df_merge = pd.merge_asof(Currency_data.sort_values('DATE'), 
                          df_merge.sort_values('DATE'), on = 'DATE') # 合併資料
   ```
+
+  > 若有自行想增添的欄位（或者部分欄位有待數據引入後才可以計算），也可以如下
+  ```
+  # 計算兩筆資料間差距 (前後或者上下之間)
+  df_merge['FEDFUNDS_Delta'] = df_merge['FEDFUNDS'].pct_change(periods = 21)
+  ```
+  
+* #### 指定資料時段
+  這裡要先指定時間段主要是考量當資料夠大時，再行裁切會造成過去的計算內容白費，因此先行裁切再行計算。
+  
+  ```
+  # 因資料特定欄位計算有回朔需求而向前推進抓取時間，設定要排除的期間
+  end_date = '2019-12-31' # 2019-12-31
+
+  # 排除特定期間內的數據
+  df_merge.set_index('DATE', inplace = True)
+  df_merge.drop(df_merge.loc[:end_date].index, inplace = True)
+
+  # 計算差距欄位 (欄位之間)
+  df_merge['CPI_Delta'] = df_merge['CPIAUCNS'] - df_merge['TW_CPI'] # 兩國 CPI 差距
+
+  # 移除無用欄位
+  df_merge = df_merge.drop(columns = ['Volume', 'BOP', 'CDL3BLACKCROWS', 
+                                    'Gold_Adj_Close'])
+  ```
+  > `df_merge.drop(df_merge.loc[:end_date].index, inplace = True)` 這裡的變數 `end_date` 是移除指定時間 "**之前**" 的所有資料。
   
 * #### 新增輸出欄位
   
   
   ```
+  
   ```
   
 * #### 儲存訓練資料
