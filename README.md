@@ -632,13 +632,17 @@ CUDA Version        : 12.6
      # 分割資料
      trainX, testX, trainY, testY, feature_names = split_stock_data(df, label_column)
      ```
+
      > `df_Latest = pd.read_excel("../data_Latest.xlsx")` 就是準備好的近期測試資料，來揭穿夢想的泡泡 ~ QQ
+     
      > `# 0.821` 這個只是過去的最佳成績紀錄，但後續會說明，這一切都是假的！！！
+     
      > `train_test_split` 預設 `shuffle = True` ，意思會打亂分割資料集的資料順序！並不適用於時間序列資料！
 
-  2. 取得批改結果
+  3. 取得批改結果
 
      將訓練完的預測結果（作答結果） `Xgboost.predict(testX)` 比對測試集答案 `testY`，存到 `xor_result` 供後續繪圖。
+
      >  `xor_result` 沒有按時間順序排序。
      ```
      ...略
@@ -669,7 +673,7 @@ CUDA Version        : 12.6
      print('Xgboost近期數據測試準確率 %.3f' % latest_data_test_acc)
      ```
 
-  3. 繪製熱量圖
+  5. 繪製熱量圖
 
      接著嘗試繪製熱量圖
      ```
@@ -772,8 +776,11 @@ CUDA Version        : 12.6
          
      darw(result[:])
      ```
+     
      上圖
+     
      ![無序的特徵熱量圖](./ProjectImages/xgboost指定特徵.png)
+
      搭啦！是不是很眼熟阿 ~
 
 * #### 批次分段再訓練（指定特徵）
