@@ -306,7 +306,6 @@ CUDA Version        : 12.6
   Currency_data['STDDEV'] = talib.STDDEV (df_close, timeperiod=5, nbdev=1)
   Currency_data['CDL3BLACKCROWS'] = talib.CDL3BLACKCROWS (df_open, df_high, 
                                                         df_low, df_close)
-
   ```
   
 * #### 合併資料
@@ -470,7 +469,7 @@ CUDA Version        : 12.6
 
   > 2005 至 2006 5月中的資料有不明遺失，但在此之前之後的資料都正常。
 
-  > 所謂無效資料，源自倒數**指定天數**的資料因無法得知，導致資料不齊全。
+  > 所謂無效資料，源自倒數**指定天數**數量的資料因無法得知（占所有近期資料的比例，會隨著越晚執行，占比逐漸降低），導致資料不齊全。
   
   即便再次拉長天數至百日，測試集也不會再有更高突破，但**在無效資料（紅線）占比超過 30% 之後**，即便採近期資料作測試集，也有顯著上升一個階級！
 
@@ -811,8 +810,6 @@ CUDA Version        : 12.6
          
      darw(result[:])
      ```
-     
-     上圖
      
      ![無序的特徵熱量圖](./ProjectImages/xgboost指定特徵.png)
 
