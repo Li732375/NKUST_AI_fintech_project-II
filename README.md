@@ -461,6 +461,8 @@ CUDA Version        : 12.6
      ```
 
   2. 分割訓練與測試集
+     > 其實，由於這次採納的資料屬於時間序列資料（隨著時間順序收集的數據，表示某個變量在不連續或連續的時間點上的變化，連續資料之間具趨勢且順序不可異動（要嘛涵義有別、要不就是無效數據），像音樂、氣溫、股價、心跳），而 `train_test_split` 更常應用於橫斷面資料（cross section data）的數據。
+     > 例如你買西瓜時，不會因為隔天就變成橘子，但股價會變。
      ```
      def split_stock_data(stock_data, label_column, delete_column, test_size = 0.3, 
                       random_state = 42):
@@ -485,7 +487,7 @@ CUDA Version        : 12.6
                                                 delete_column)
      ```
      
-  3. 訓練模型
+  4. 訓練模型
      > `import time` 僅僅只是計時用，紀錄模型訓練時間。
      ```
      import time
@@ -500,7 +502,7 @@ CUDA Version        : 12.6
      print('Xgboost測試集準確率 %.2f' % test_acc)
      ```
      
-  4. 繪製特徵重要性圖表
+  5. 繪製特徵重要性圖表
      ```
      # 繪製特徵重要性圖
      import matplotlib.pyplot as plt
@@ -545,10 +547,41 @@ CUDA Version        : 12.6
      print(f"測試時間: {training_time:.2f} 秒")
      print(f'模型準確率為 {test_acc:.3f}')
      ```
-     > `Xgboost.feature_importances_` 僅能取得各特徵重要性的百分比（ex:0.123 表示重要性約 12 %）。
-     > `sorted_feature_names, sorted_importances = zip(*sorted_pairs[:])` [:數字] 取得前幾名的特徵和重要性
-     |`[:]`|`[:15]`|
+     > `Xgboost.feature_importances_` 僅能依據原先欄位的順序（`feature_names`），取得各特徵重要性的百分比（ex: 0.123 表示重要性約 12.3 %）。
+     
+     > `sorted_feature_names, sorted_importances = zip(*sorted_pairs[:])` [:數字] 取得前幾名的特徵和重要性。
+     
+     |`[:]` (全部特徵)|`[:15]` (前 15 名特徵)|
+     |:----------:|:----------:|
      |![特徵重要性橫條圖](./ProjectImages/feature_important_bar_table.png)|![特徵重要性橫條圖15](./ProjectImages/feature_important_15_bar_table.png)|
+
+     輸出結果（前 15 名）
+     ```
+     Xgboost測試集準確率 0.70
+     依特徵重要性排序
+     ('CPI_Delta', 'UNRATE', 'Gold_High', 'FEDFUNDS', 'USA_CPI_Rate', 'WILLR', 'USD_Index_Growth_Rate', 'WMA', 'Close', 'Gold_Volume', 'MACD', 'Low', 'LINEARREG_ANGLE', 'CCI', 'TW_CPI_Rate')
+     
+     CPI_Delta (10.82 %)
+     UNRATE (5.42 %)
+     Gold_High (5.07 %)
+     FEDFUNDS (4.53 %)
+     USA_CPI_Rate (3.83 %)
+     WILLR (3.24 %)
+     USD_Index_Growth_Rate (3.23 %)
+     WMA (3.09 %)
+     Close (2.68 %)
+     Gold_Volume (2.64 %)
+     MACD (2.48 %)
+     Low (2.43 %)
+     LINEARREG_ANGLE (2.39 %)
+     CCI (2.38 %)
+     TW_CPI_Rate (2.36 %)
+     
+     測試時間: 0.14 秒
+     模型準確率為 0.703
+     ```
+     > 這裡的 `模型準確率為 0.703`，就是測試集的答對率。
+     接著複製 `('CPI_Delta', 'UNRATE', 'Gold_High'...)`，進入下一節囉 ~
 
 * #### 整批訓練（指定特徵）
   再
