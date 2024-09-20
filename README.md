@@ -52,7 +52,7 @@ CUDA Version        : 12.6
   ```
   pip install -r 文件的路徑
   ```
-* #### 不想裝 Anaconda 僅要 Spyder，還可以直接共用原生的套件庫？[看這裡](https://youtu.be/miJOoagmWAw?feature=shared) 
+> 不想裝 Anaconda 僅有 Spyder，還可以直接共用原來的套件庫？[看這裡](https://youtu.be/miJOoagmWAw?feature=shared) 
 ***
 
 * #### yfinance
@@ -60,38 +60,35 @@ CUDA Version        : 12.6
   
   功能：
   1. 獲取股票、基金、ETF、外匯等資產的歷史數據
-  2. 提取公司基本信息、財務報表
+  2. 提取公司基本訊息、財務報表
   3. 支援多支股票數據下載
   4. 產生利於分析的 pandas DataFrame
 
-  這些功能使得 yfinance 成為財務分析和量化交易中常用的工具之一。
 ***
 
 * #### TA_Lib
-  TA-Lib（Technical Analysis Library）是專門用於技術分析的 Python 庫，包含多種常見的技術指標，如移動平均線（SMA）、相對強弱指標（RSI）、布林帶等。這對於進行股票、外匯等金融市場的技術分析非常有用。
+  TA-Lib（Technical Analysis Library）是專門用於技術分析的 Python 庫，包含多種常見的技術指標，如移動平均線（SMA）、相對強弱指標（RSI）、布林帶等。這對於進行股票、外匯等金融市場的技術分析非常有用。本專案使用 TA-Lib 進行技術指標計算來輔助決策，產生特徵。
   
   功能：
   1. 多種技術指標：超過 150 種技術指標和數學運算工具
   2. 高效運算：基於 C 語言的實現，運算性能極高
   3. 簡單整合：可以與 pandas、numpy 等數據科學工具無縫整合
   
-  可以使用 TA-Lib 進行技術指標計算來輔助決策。
-  
 ***
 
 ## 數據選用
-在與 ChatGPT 交流後，整理出以下影響因素：
+在與 ChatGPT 交流後，整理出以下可量化的影響因素：
 * #### 美元兌台幣影響因素
 
   1. 經濟基本面
      - **經濟增長率**：可以通過國內生產總值（GDP）增長率來量化。這些數據通常由國家統計局或國際組織（如世界銀行、國際貨幣基金組織）提供。
-     - **通脹率**：通脹率可以通過消費者物價指數（CPI）來量化。CPI 是衡量一籃商品和服務價格變化的指標。
+     - **通膨率**：通膨率可以透過消費者物價指數（CPI）來量化。CPI 是衡量一籃商品和服務價格變化的指標。
      - **利率**：中央銀行的政策利率（如美國聯邦基金利率、台灣的基準利率）是可量化的。這些數據由中央銀行公布。
   2. 貨幣政策
      - **中央銀行政策**：可以量化的指標包括利率變化幅度和中央銀行的貨幣政策聲明。利率的變化可以在利率公告和政策報告中找到。
      - **市場預期**：可以通過期貨市場的利率期貨合約、中央銀行的政策預期調查等來量化市場對未來貨幣政策的預期。
   3. 國際貿易
-     - **貿易平衡**：貿易順差或逆差可以通過貿易賬戶數據來量化。這些數據顯示了國家出口與進口之間的差異。
+     - **貿易平衡**：貿易順差或逆差可以通過貿易帳戶數據來量化。這些數據顯示了國家出口與進口之間的差異。
      - **進出口數據**：可以通過詳細的進出口數據來量化，包括進口和出口的貨物和服務的金額。
   4. 政治與地緣政治風險
      - **政治穩定性**：雖然政治穩定性本身難以量化，但可以通過投資風險指數、政治風險報告和信用評級機構的評級來間接衡量。
@@ -100,9 +97,9 @@ CUDA Version        : 12.6
      - **投資者情緒**：可以通過市場情緒指數（如消費者信心指數、投資者情緒指數）來量化。
      - **資本流動**：可以通過資本流入流出數據來量化，例如外國直接投資（FDI）和投資組合資本流動數據。
   6. 美元指數（DXY）
-     - **美元指數**：美元指數本身就是一個量化的指標，衡量美元對一籃主要貨幣的價值。這個指數可以從金融市場數據提供商處獲得。
+     - **美元指數**：美元指數本身就是一個量化的指標，衡量美元對一籃主要貨幣的價值。這個指數可以從金融市場數據提供商獲得。
   7. 國際經濟環境
-     - **全球經濟狀況**：可以通過全球經濟增長率、全球市場指數（如MSCI全球指數）來量化。這些數據來自國際經濟組織和金融機構。
+     - **全球經濟狀況**：透過全球經濟增長率、全球市場指數（如 MSCI 全球指數）來量化。這些數據來自國際經濟組織和金融機構。
   8. 國際資本流動
      - **外匯儲備**：中央銀行的外匯儲備數據是可量化的，這些數據通常由各國中央銀行或國際金融機構提供。
 
@@ -137,6 +134,7 @@ CUDA Version        : 12.6
   Currency_data = yf.download(Currency_symbol, 
                               start = Data_Time_Start, end = Data_Time_End) # 獲取特定日期範圍的匯率資料  
   ```
+  > `DataFolder = 'Ori_Data/'` 這裡是自定義的資料夾名稱，用來集中原始數據。
   
 * #### 代號取得？
 
@@ -161,7 +159,7 @@ CUDA Version        : 12.6
   
 * #### 儲存原始數據
 
-  保留最原始完全未更動的數據（儲存為 Excel 檔案），供後續的預處理流程。
+  保留最原始完全未更動的數據（儲存為 Excel 檔案）至資料夾 `Ori_Data`，供後續的預處理流程。
   ```
   excel_filename = f'USDto{Currency_symbol[:3]}_Currency_Data.xlsx' # 將匯率資料儲存為 Excel 檔案，以匯率代號作為檔案名稱
   Currency_data.to_excel(DataFolder + excel_filename)
@@ -180,7 +178,8 @@ CUDA Version        : 12.6
   plt.show()
   ```
   ![歷史貨幣走勢](./Ori_Data/Currency_Data.png)
-  > 讀者執行的時間不同，與此略有差異是正常的（至少同時段的區間會相同）。繪製其他數據時，別忘記要更新資料物件、兩軸名稱、標題名稱
+  > 這裡的圖片並未寫入儲存，是作者使用 spyder 時，右鍵另存的。
+  > 後續繪製其他數據時，別忘記也要更新資料物件、兩軸名稱、標題名稱。
   
 * #### 網址數據
 
@@ -220,7 +219,7 @@ CUDA Version        : 12.6
   print(TW_cpi.head())
   ```
   如此逐項下載並繪圖預覽～
-  > 在檔案 "**資料下載2.py**" 裡，也是用同樣方式取得最新近期資料（2024-01-01 ~ 至今）。
+  > 在檔案 "**資料下載2.py**" 裡，也是用同樣方式取得最新近期資料（2024-01-01 ~ 至昨天(含)）。
 ***
 
 ## 資料預處理
@@ -235,7 +234,7 @@ CUDA Version        : 12.6
 
 * #### 讀入數據
   從歷史貨幣數據開始，讀入 excel (.xlsx)，並且分配欄位予四個變數，供下一節使用。
-  > 這裡讀入的資訊，會在最後一節重新寫入新的 excel (.xlsx)。
+  > 這裡讀入的數據，會在最後一節重新寫入新的 excel (.xlsx)，不會影響原先的原始數據。
   ```
   import pandas as pd
   import talib
@@ -250,20 +249,6 @@ CUDA Version        : 12.6
   df_high = Currency_data['High']
   df_low = Currency_data['Low']
   ```
-
-  同樣在後續的合併章節時才逐一讀入的檔案
-  ```
-  # 讀入其他資料進行合併
-  Fed_Funds_Rate = pd.read_excel(DataFolder + 'Fed_Funds_Rate.xlsx')  
-  USA_CPI = pd.read_excel(DataFolder + 'USA_CPI_Data.xlsx')  
-  USA_Unemployment_Rate = pd.read_excel(DataFolder + 'USA_Unemployment_Rate.xlsx')  
-  TW_CPI = pd.read_excel(DataFolder + 'TW_CPI.xlsx')
-  USA_GDP = pd.read_excel(DataFolder + 'USA_GDP.xlsx')
-  TW_Rate = pd.read_excel(DataFolder + 'TW_Rate.xlsx')
-  DXY_NYB = pd.read_excel(DataFolder + 'Dx-y_Data.xlsx')
-  GOLD_data = pd.read_excel(DataFolder + 'Gold_Data.xlsx')
-  ```
-  
 
 * #### 選用與新增技術指標
   指標選用的部分，其實仰賴相對熟悉該領域的老手或者網路教學資料了，作者查詢後，似乎概念和股票相仿。參數部分幾乎仰賴預設值。
@@ -326,6 +311,19 @@ CUDA Version        : 12.6
   
 * #### 合併資料
   接著仿資料庫形式，逐一合併其他調整後的數據。
+  
+  逐一讀入其他數據
+  ```
+  # 讀入其他資料進行合併
+  Fed_Funds_Rate = pd.read_excel(DataFolder + 'Fed_Funds_Rate.xlsx')  
+  USA_CPI = pd.read_excel(DataFolder + 'USA_CPI_Data.xlsx')  
+  USA_Unemployment_Rate = pd.read_excel(DataFolder + 'USA_Unemployment_Rate.xlsx')  
+  TW_CPI = pd.read_excel(DataFolder + 'TW_CPI.xlsx')
+  USA_GDP = pd.read_excel(DataFolder + 'USA_GDP.xlsx')
+  TW_Rate = pd.read_excel(DataFolder + 'TW_Rate.xlsx')
+  DXY_NYB = pd.read_excel(DataFolder + 'Dx-y_Data.xlsx')
+  GOLD_data = pd.read_excel(DataFolder + 'Gold_Data.xlsx')
+  ```
 
   > merge_asof，用於合併兩個數據框（DataFrame） ，其中一個 DataFrame 的時間戳（或排序列）可能在另一個 DataFrame 中找不到完全對應的記錄。這時，可以根據時間戳的前向或後向對齊進行合併。
   ```
@@ -371,14 +369,14 @@ CUDA Version        : 12.6
                          df_merge.sort_values('DATE'), on = 'DATE') # 合併資料
   ```
 
-  > 若有自行想增添的欄位（或者部分欄位有待數據引入後才可以計算），也可以如下
+  > 若有自行想增添的欄位（或者部分欄位有待數據引入後才可以計算），也可以如下撰寫
   ```
   # 計算兩筆資料間差距 (前後或者上下之間)
   df_merge['FEDFUNDS_Delta'] = df_merge['FEDFUNDS'].pct_change(periods = 21)
   ```
   
 * #### 指定資料時段
-  這裡要先指定時間段主要是考量當資料夠大時，再行裁切會造成過去的計算內容白費，因此先行裁切再行計算。
+  這裡要先指定時間段主要是考量當資料龐大時，統一算完再行裁切的話，會造成過去的處理內容白費，因此先行裁切再行處理（有關要向前捕捉的資料，只要讀進來的原始數據存在，就不影響處理）。
   
   ```
   # 因資料特定欄位計算有回朔需求而向前推進抓取時間，設定要排除的期間
@@ -398,18 +396,45 @@ CUDA Version        : 12.6
   > `df_merge.drop(df_merge.loc[:end_date].index, inplace = True)` 這裡的變數 `end_date` 是移除指定時間 "**之前**" 的所有資料。
   
 * #### 新增輸出欄位
-  
+  由於是採**監督式學習**，所以必須要有答案供機器學習參照。
+  > 在此之前，所有欄位都是作為輸入模型的**特徵**。
   
   ```
-  
+  # 處理 y 資料
+  pre_day = 2
+  df_merge[f'Next_{pre_day}Day_Return'] = \
+    df_merge['Close'].diff(pre_day).shift(-pre_day) # 計算價格變化
+  # =============================================================================
+  # diff 函數，計算列中相鄰元素之間的差異。計算當前值與前指定時間點的值（pre_day）的差
+  # shift 函數﹑移動要指定哪個目標資料，負數表示向上移動，反之向下
+  # =============================================================================
+
+  def classify_return(x):
+    return 1 if x > 0 else 0  # 標示漲跌，大於 0 標示為漲(1)，小於 0 標示為跌(0)
+
+  df_merge['LABEL'] = \
+    df_merge[f'Next_{pre_day}Day_Return'].apply(
+        classify_return) # 創造新的一列 LABEL 來記錄漲跌
   ```
+  按作者經驗（後續章節圖表會顯示），先抓預測兩天後的準確率最佳。
   
 * #### 儲存訓練資料
-  
+  再次檢視處理後的內容，確認無誤後就可以 `df_merge.to_excel("data.xlsx")` 另存成 excel (.xlsx)。
   
   ```
+  print(df_merge.head())
+  print(df_merge.tail())
+  df_merge.to_excel("data.xlsx") # 將整理好的資料存成 excel
+  print(f"訓練資料期間 【{str(df_merge.index[0])[:10]} - {str(df_merge.index[len(df_merge) - 1])[:10]}】")
+  print("已將結果寫入檔案 data.xlsx")
+
+  ones_count = (df_merge['LABEL'] == 1).sum()
+  zero_count = (df_merge['LABEL'] == 0).sum()
+  print(f"上漲數為 {ones_count} ({ones_count / df_merge['LABEL'].count() * 100:.1f} %)")
+  print(f"下跌數為 {zero_count} ({zero_count / df_merge['LABEL'].count() * 100:.1f} %)")
+  print(f"總特徵數為 {len(df_merge.columns)}")
   ```
-  如此一來，完成訓練模型的資料啦～
+  如此一來，完成訓練模型的資料準備啦～
   > 在檔案 "**資料特徵處理2.py**" 裡，也是用同樣方式預處理近期資料（2024-01-01 ~ 至今）。
 
 ***
@@ -417,11 +442,136 @@ CUDA Version        : 12.6
 ## 訓練模型成果
   
 * #### 訓練模型
-採用 XGBoost 訓練模型
+本專案採用 XGBoost 訓練模型，並且在取得前 15 名重要特徵後，依據指定特徵，設定四種訓練策略：
+1. 整批訓練：一般常見形式，將分割好的訓練集資料集全部賦予同一模型訓練
+2. 批次分段再訓練：將分割好的訓練集資料集再分批，分別賦予同一模型訓練
+3. 批次分段各別訓練：將分割好的訓練集資料集再分批，分別賦予不同模型訓練
+4. 批次分段增量再訓練：將分割好的訓練集資料集再分批，但每批會涵蓋前一批內容，分別賦予同一模型訓練
+  
+* #### 特徵重要性檢視
+  在檔案 "**xgboost訓練範例.py**" 裡，將訓練資料 "data.xlsx" 讀入，訓練模型後，取得特徵重要度排名。
+  
+  1. 讀入資料
+     ```
+     import pandas as pd
+     from sklearn.model_selection import train_test_split
+     from xgboost import XGBClassifier
+     
+     df = pd.read_excel('data.xlsx', index_col = 'DATE')
+     ```
+
+  2. 分割訓練與測試集
+     ```
+     def split_stock_data(stock_data, label_column, delete_column, test_size = 0.3, 
+                      random_state = 42):
+     
+	 X = stock_data.drop(delete_column, axis = 1)
+    	 feature_names = X.columns.tolist()
+    	 y = stock_data[label_column].values
+     
+    	 X_train, X_test, y_train, y_test = train_test_split(X, y, 
+                                                        test_size = test_size, 
+                                                        random_state = 
+                                                        random_state) # 資料分割
+     
+     	 return X_train, X_test, y_train, y_test, feature_names
+      
+     label_column = 'LABEL' # 標籤欄位
+     # 刪除的欄位，欄位 'Next_?Day_Return' 中，? 應視特徵處理檔案參數 pre_day 調整
+     delete_column = ['LABEL', 'Next_2Day_Return']
+     
+     # 切分資料為訓練與測試集
+     trainX, testX, trainY, testY, feature_names = split_stock_data(df, label_column, 
+                                                delete_column)
+     ```
+     
+  3. 訓練模型
+     > `import time` 僅僅只是計時用，紀錄模型訓練時間。
+     ```
+     import time
+
+     Xgboost = XGBClassifier()
+     start_time = time.time()
+     Xgboost.fit(trainX, trainY)
+     training_time = time.time() - start_time
+     
+     test_predic = Xgboost.predict(testX) # 取得預測的結果
+     test_acc = Xgboost.score(testX, testY)
+     print('Xgboost測試集準確率 %.2f' % test_acc)
+     ```
+     
+  4. 繪製特徵重要性圖表
+     ```
+     # 繪製特徵重要性圖
+     import matplotlib.pyplot as plt
+     
+     # 將特徵名稱和重要性配對
+     feature_importance_pairs = list(zip(feature_names, 
+                                    Xgboost.feature_importances_))
+     
+     sorted_pairs = sorted(feature_importance_pairs, key = lambda x: x[1], 
+                      reverse = True)
+     
+     # 提取排序後的特徵
+     sorted_feature_names, sorted_importances = zip(*sorted_pairs[:]) # [:數字] 取得前幾名的特徵和重要性
+     print("依特徵重要性排序")
+     print(sorted_feature_names)
+     print()
+     
+     for i, j in zip(sorted_feature_names, sorted_importances):
+         print(f"{i} ({j * 100:.2f} %)")
+     print()
+     
+     # 繪製特徵重要性橫條圖
+     plt.rcParams['font.family'] = 'Microsoft JhengHei' # 設置中文字體
+     plt.figure(figsize = (12, 8))
+     bars = plt.barh(sorted_feature_names, sorted_importances, color = 'skyblue')
+     
+     # 顯示每個橫條的數值
+     for bar in bars:
+         width = bar.get_width()
+         plt.text(width + 0.002, bar.get_y() + bar.get_height() / 2, 
+             f'{width * 100:.2f} %', 
+             va = 'center', ha = 'left', fontsize = 10)
+         
+     plt.xlabel('特徵重要性')
+     plt.ylabel('特徵')
+     plt.title('特徵重要性')
+     plt.tight_layout(pad = 0.5)
+     plt.gca().invert_yaxis()  # 反轉 y 軸，使重要性高的特徵顯示在上面
+     plt.show()
+     
+     
+     print(f"測試時間: {training_time:.2f} 秒")
+     print(f'模型準確率為 {test_acc:.3f}')
+     ```
+     > `Xgboost.feature_importances_` 僅能取得各特徵重要性的百分比（ex:0.123 表示重要性約 12 %）。
+     > `sorted_feature_names, sorted_importances = zip(*sorted_pairs[:])` [:數字] 取得前幾名的特徵和重要性
+     |`[:]`|`[:15]`|
+     |![特徵重要性橫條圖](./ProjectImages/feature_important_bar_table.png)|![特徵重要性橫條圖15](./ProjectImages/feature_important_15_bar_table.png)|
+
+* #### 整批訓練（指定特徵）
+  再
+  > 為何取前 15 名？
   ```
   ```
 
-* #### 訓練模型方式
+* #### 批次分段再訓練（指定特徵）
+  再
+  ```
+  ```
+
+* #### 批次分段各別訓練（指定特徵）
+  再
+  ```
+  ```
+
+* #### 批次分段增量再訓練（指定特徵）
+  再
+  ```
+  ```
+
+* #### 預測日數與
 
 
 ***
