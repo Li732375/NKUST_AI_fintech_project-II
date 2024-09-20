@@ -120,7 +120,7 @@ df_merge['FEDFUNDS_Delta'] = df_merge['FEDFUNDS'].pct_change(periods = 21)
 
 
 # 因資料特定欄位計算有回朔需求而向前推進抓取時間，設定要排除的期間
-end_date = '2019-12-31'
+end_date = '2020-12-31'
 
 # 排除特定期間內的數據
 df_merge.set_index('DATE', inplace = True)
@@ -182,7 +182,7 @@ for i in range(60):
         df_merge = df_merge.drop(columns = [f'Next_{i}Day_Return'])
     
     #print(df_merge.head())
-    df_merge.to_excel("data.xlsx", index = False) # 將整理好的資料存成 excel
+    df_merge.to_excel("data.xlsx", index = True) # 將整理好的資料存成 excel
     print("已將結果寫入檔案 data.xlsx")
     
     ones_count = (df_merge['LABEL'] == 1).sum()
