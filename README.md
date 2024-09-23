@@ -469,9 +469,9 @@ CUDA Version        : 12.6
 
   > 2005 至 2006 5月中的資料有不明遺失，但在此之前之後的資料都正常。
 
-  > 所謂無效資料，源自倒數**指定天數**數量的資料因無法得知（占所有近期資料的比例，會隨著越晚執行，占比逐漸降低），導致資料不齊全。
+  > 所謂無效資料，源自倒數**指定天數**數量的資料因無法得知，導致資料有固定數量缺失。近期資料自 2024 年元旦始至執行前一日（含），占據所有近期資料的比例會隨著越晚執行，占比逐漸降低
   
-  即便再次拉長天數至百日，測試集也不會再有更高突破，但**在無效資料（紅線）占比超過 30% 之後**，即便採近期資料作測試集，也有顯著上升一個階級！
+  即便再次拉長預測天數至百日，測試集也不會再有更高突破，但**在無效資料（紅線）占比超過 30% 之後**，即便採近期資料作測試集，也有顯著上升一個階級！
 
   > 這也是為何預測天數控制在 2 天！！！
   
@@ -669,8 +669,6 @@ CUDA Version        : 12.6
 
      > `df_Latest = pd.read_excel("../data_Latest.xlsx")` 就是準備好的近期測試資料，來揭穿夢想的泡泡！
      
-     > `# 0.821` 這個只是過去的最佳成績紀錄，但後續會說明，這一切都是假的！！！
-     
      > `train_test_split` 預設 `shuffle = True` ，意思會打亂分割資料集的資料順序！並不適用於時間序列資料！
 
   2. 取得批改結果
@@ -816,27 +814,155 @@ CUDA Version        : 12.6
      搭啦！綠色表示答對一題（某筆資料），灰色表示答錯。這個圖是不是很眼熟阿 ~
 
 * #### 批次分段再訓練（指定特徵）
-  
-  ```
-  ```
+
+  1. 不同的切割資料方案 `TimeSeriesSplit` 
+
+     **TimeSeriesSplit** 是 scikit-learn 中用來處理時間序列數據的交叉驗證方法，特別適合時間序列數據的特性，因為時間序列具有順序性，資料不能隨意打亂。普通的交叉驗證會隨機分割數據，而 TimeSeriesSplit 則是根據時間順序逐步將數據進行分割，確保訓練集總是在測試集之前。
+
+     假設以下數據集：
+
+     ```
+     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+     ```
+
+     使用 TimeSeriesSplit，數據會被這樣分割：
+
+     ```
+     分割批次 1: Train: [1, 2], Test: [3]
+     分割批次 2: Train: [1, 2, 3], Test: [4]
+     分割批次 3: Train: [1, 2, 3, 4], Test: [5]
+     ...略
+     ```
+
+     讀入訓練資料後如下應用，設定分割 9 份，且彼此重疊 30 %：
+     
+     ```
+     import pandas as pd
+     from sklearn.model_selection import TimeSeriesSplit
+     import math
+     from xgboost import XGBClassifier
+     import time
+     import os
+     import Plot
+     
+     ...略
+     
+     n_splits = 9 # 設定分割數量
+     overlap_rate = 3 * 0.1 + 1 # 設定每批訓練集之間的，最低重疊率
+     max_train_size = math.ceil(len(df) // n_splits * overlap_rate) if \
+         len(df) % n_splits == 0 else math.ceil(len(df) / n_splits * overlap_rate) # 計算最大訓練集大小
+     print(f"最大資料長度 {max_train_size}")
+
+     # 初始化 TimeSeriesSplit
+     TSS = TimeSeriesSplit(n_splits = n_splits, max_train_size = max_train_size)
+     ```
+
+     > 不可指定訓練與測試集的占比，設定比例基本上控制在各段數據參半（先訓練集後測試集）。
+
+  2. 分批提取
+     
+     ```
+     # 儲存每個折的訓練集索引
+     split_indices = [None for _ in range(n_splits)]
+     batch_test_scores = []
+     latest_test_scores = []
+     
+     Xgboost = XGBClassifier()
+     
+     # 逐步分割資料
+     for i, (train_index, test_index) in enumerate(TSS.split(X, y)):
+         split_indices[i] = train_index
+         sub_train_index = df.iloc[train_index]
+         sub_test_index = df.iloc[test_index]
+         train_len = len(sub_train_index)
+         test_len = len(sub_test_index)
+         all_len = train_len + test_len
+         
+         ...略
+     
+         # 提取訓練集和測試集
+         sub_trainX, sub_testX = X[train_index], X[test_index]
+         sub_trainY, sub_testY = y[train_index], y[test_index]
+     ```
+
+     資料分割如下圖：
+
+     ![批次分段再訓練資料分割圖](./ProjectImages/批次分段再訓練資料分割圖.png)
+
+  3. 訓練模型
+ 
+     由於是分段再訓練，會重新利用同一模型。這裡儲存模型為 `.json`。
+
+     ```
+     # 如果模型檔案存在，載入模型；否則初始化一個新模型
+         if os.path.exists(f'xgboost_model_{i}.json'):
+             Xgboost.load_model(f'xgboost_model_{i}.json')
+             print(f'載入模型：xgboost_model_{i}.json')
+         else:
+             print(f'初始化新模型：xgboost_model_{i}.json')
+             
+         # 訓練 XGBoost 模型
+         start_time = time.time()
+         Xgboost.fit(sub_trainX, sub_trainY)
+         training_time = time.time() - start_time
+         
+         # 批次測試集預測結果和模型準確率
+         test_acc = Xgboost.score(sub_testX, sub_testY)
+         batch_test_scores.append(test_acc)
+         
+         print('Xgboost測試集準確率 %.3f' % test_acc)
+         print(f"訓練時間: {training_time // 60:.0f} 分 {training_time % 60:.2f} 秒")
+         
+         # 最新資料測試
+         latest_data_test_acc = Xgboost.score(X_Latest, y_Latest)
+         latest_test_scores.append(latest_data_test_acc)
+         
+         # 儲存當前訓練後的模型
+         Xgboost.save_model(f'xgboost_model_{i + 1}.json')
+     ```
+
+     訓練成果圖：
+
+     ![批次分段再訓練準確率](./ProjectImages/批次分段再訓練準確率.png)
 
 * #### 批次分段各別訓練（指定特徵）
-  再
-  ```
-  ```
+
+  設定分割 9 份，且彼此重疊 30 %
+  
+  |資料分割|訓練成果|
+  |:-:|:-:|
+  |![分批各別訓練資料分割圖](./ProjectImages/分批各別訓練資料分割圖.png)|![分批各別訓練準確率](./ProjectImages/分批各別訓練準確率.png)|
 
 * #### 批次分段增量再訓練（指定特徵）
-  再
-  ```
-  ```
 
-* #### 預測日數與
+  設定分割 9 份，且彼此重疊 30 %
+  
+  |資料分割|訓練成果|
+  |:-:|:-:|
+  |![批次增量再訓練資料分割圖.png](./ProjectImages/批次增量再訓練資料分割圖.png)|![批次增量再訓練準確率.png](./ProjectImages/批次增量再訓練準確率.png)|
 
+  > 嘀咕：其實這裡就不應該再設定重疊率了！
 
 ***
 
 ## 結語
 
+儘管此專案事後重新檢視下來仍有諸多需要進步的地方，彙整如下：
+
+1. 時間序列資料不適用 `train_test_split` 做資料分割，因為會打亂資料順序，違背時間序列特色。
+2. 模型選用上，適合採納更理想的時間序列模型（ex: LSTM）。
+3. 未考慮進無效資料占近期資料比例和僅透過測試集資料訓練結果，導致過於理想，但實際上看來是**過擬和**。
+4. 分段增量不應再設定重疊率
+
+* #### Plot.py
+  提供相異訓練策略之間繪製圖表（資料分割圖與準確率變化圖）
+
+* #### 特徵組合範例.py
+  嘗試找出最佳特徵組合，但透過排列組合的計算就可以得知，成本過高，僅保留做範例。
+  
+* #### 週K與熱力對照圖範例.py
+  用於將時間序列資料繪製週K圖，並在下方提供熱量圖對照，原先期待能依此辨識出訓練成效較差的資料區間，進一步篩選出較佳的 "**訓練資料**"，提升模型成效。
+  
 ***
 
 參考連結
